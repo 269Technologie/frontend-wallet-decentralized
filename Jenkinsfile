@@ -58,11 +58,17 @@ pipeline {
       }
     }
 
-    stage('Build') {
-      steps {
-        sh 'npm run build'
-      }
+  stage('Build') {
+    steps {
+      sh '''
+        export VITE_BASE=/v1/wallet/
+        export VITE_API_BASE_URL=https://api.winedge.io
+        export VITE_WS_URL=wss://api.winedge.io/v1/wallet-ws
+        npm run build
+      '''
     }
+  }
+
 
     stage('Build Image') {
       steps {
