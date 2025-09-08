@@ -17,7 +17,9 @@ const router = createBrowserRouter([
     path: "*",
     element: <NotFound />,
   },
-]);
+], {
+  basename: "/v1/wallet"
+});
 
 const AppRouter = () => {
   return <RouterProvider router={router} />;
