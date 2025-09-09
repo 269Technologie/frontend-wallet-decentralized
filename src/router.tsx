@@ -7,7 +7,7 @@ import NotFound from "@/pages/NotFound";
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Index />,
+    element: <Index onWalletCreated={(wallet) => console.log('Wallet created:', wallet)} />,
   },
   {
     path: "/dashboard",

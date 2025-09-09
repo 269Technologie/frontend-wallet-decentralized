@@ -16,7 +16,7 @@ const TransactionHistory = ({ address }: TransactionHistoryProps) => {
 
   const fetchTransactionHistory = async () => {
     try {
-      const response = await fetch(`https://api.winedge.io/v2/wallet/transaction/history/${address}`);
+      const response = await fetch(`https://api.winedge.io/v2/transaction/history/${address}`);
       if (response.ok) {
         const data = await response.json();
         setTransactions(data.transactions || []);
