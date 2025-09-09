@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
-    allowedHosts: ["api.winedge.io"],
+    allowedHosts: ["api.winedge.io","test2.269technology.com"],
   },
   plugins: [
     react(),
