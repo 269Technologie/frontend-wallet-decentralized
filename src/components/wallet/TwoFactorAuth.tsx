@@ -24,7 +24,7 @@ const TwoFactorAuth = ({ userId, onSecretGenerated }: TwoFactorAuthProps) => {
   const generate2FA = async () => {
     setLoading(true);
     try {
-      const response = await fetch("https://api.winedge.io/v2/2fa/generate", {
+      const response = await fetch("https://api.winedge.io/v2/wallet/2fa/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -67,7 +67,7 @@ const TwoFactorAuth = ({ userId, onSecretGenerated }: TwoFactorAuthProps) => {
 
     setLoading(true);
     try {
-      const response = await fetch("https://api.winedge.io/v2/2fa/verify", {
+      const response = await fetch("https://api.winedge.io/v2/wallet/2fa/verify", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

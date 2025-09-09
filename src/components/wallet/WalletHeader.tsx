@@ -21,7 +21,7 @@ const WalletHeader = ({ address, privateKey, twoFASecret }: WalletHeaderProps) =
 
   const fetchBalance = async () => {
     try {
-      const response = await fetch(`https://api.winedge.io/v2/balance/${address}`);
+      const response = await fetch(`https://api.winedge.io/v2/wallet/balance/${address}`);
       if (response.ok) {
         const data = await response.json();
         setBalance((data.balance / 100000000).toFixed(8)); // Convert from satoshis to BTC
