@@ -18,7 +18,7 @@ const WalletSetup = ({ onWalletCreated }: { onWalletCreated: (walletData: any) =
   const createWallet = async () => {
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:3000/wallet/create", {
+      const response = await fetch("http://localhost:5002/wallet/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
