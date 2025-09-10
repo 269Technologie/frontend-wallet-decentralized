@@ -113,31 +113,31 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
 
             {walletData.mnemonic && (
               <Card className="p-6 border border-amber-300/50 bg-amber-50/30 dark:bg-amber-500/5">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+                  <div className="sm:max-w-[60%]">
                     <h3 className="text-lg font-semibold">Phrase de récupération</h3>
                     <p className="text-sm text-muted-foreground">
                       Conservez ces mots en lieu sûr. Ne les partagez jamais. Ils permettent de restaurer l'accès à votre wallet.
                     </p>
                   </div>
-                  <div className="flex gap-2">
-                    <Button variant="secondary" size="sm" onClick={() => setShowMnemonic((s) => !s)}>
+                  <div className="flex flex-wrap w-full sm:w-auto gap-2">
+                    <Button variant="secondary" size="sm" onClick={() => setShowMnemonic((s) => !s)} className="flex-1 min-w-[120px]">
                       {showMnemonic ? <EyeOff className="h-4 w-4 mr-2" /> : <Eye className="h-4 w-4 mr-2" />}
                       {showMnemonic ? "Masquer" : "Afficher"}
                     </Button>
-                    <Button variant="outline" size="sm" onClick={handleCopyMnemonic}>
+                    <Button variant="outline" size="sm" onClick={handleCopyMnemonic} className="flex-1 min-w-[120px]">
                       <Copy className="h-4 w-4 mr-2" /> Copier
                     </Button>
-                    <Button variant="outline" size="sm" onClick={handleDownloadMnemonic}>
+                    <Button variant="outline" size="sm" onClick={handleDownloadMnemonic} className="flex-1 min-w-[120px]">
                       Télécharger
                     </Button>
                   </div>
                 </div>
                 <div className="mt-4">
                   {showMnemonic ? (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
                       {walletData.mnemonic.split(' ').map((word, idx) => (
-                        <div key={idx} className="px-3 py-2 rounded-md bg-muted text-foreground font-mono text-sm">
+                        <div key={idx} className="px-2 py-2 rounded-md bg-muted text-foreground font-mono text-xs sm:text-sm break-words">
                           <span className="text-muted-foreground mr-2">{idx + 1}.</span>
                           {word}
                         </div>
