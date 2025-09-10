@@ -130,10 +130,13 @@ const WalletSetup = ({ onWalletCreated }: { onWalletCreated: (walletData: any) =
               <h2 className="text-xl font-semibold text-foreground">
                 Créer un nouveau wallet
               </h2>
-              <p className="text-muted-foreground">
-                Un nouveau wallet sera généré avec une phrase de récupération unique.
-                Assurez-vous de la sauvegarder en lieu sûr.
-              </p>
+                <p className="text-muted-foreground">
+                  WinEdge n’a pas pu se connecter à votre wallet existant.  
+                  Pas d’inquiétude : un nouveau wallet sécurisé va être généré pour vous, 
+                  avec une phrase de récupération unique.  
+                  Conservez-la précieusement en lieu sûr, car elle est la seule clé 
+                  pour restaurer l’accès à vos fonds.
+                </p>
               <div className="space-y-4">
                 <Label>Nombre de mots pour la phrase de récupération</Label>
                 <RadioGroup

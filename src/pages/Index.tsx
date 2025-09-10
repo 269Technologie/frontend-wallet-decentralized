@@ -1,11 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import WalletHeader from "@/components/wallet/WalletHeader";
-import QuickActions from "@/components/wallet/QuickActions";
-import TransactionHistory from "@/components/wallet/TransactionHistory";
-import PriceChart from "@/components/wallet/PriceChart";
 import WalletSetup from "@/components/wallet/WalletSetup";
-import SendTransaction from "@/components/wallet/SendTransaction";
 import TwoFactorAuth from "@/components/wallet/TwoFactorAuth";
+import { Button } from "@/components/ui/button";
 
 interface IndexProps {
   onWalletCreated: (wallet: any) => void;
@@ -50,25 +47,25 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
             twoFASecret={twoFASecret}
           />
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <SendTransaction 
-                  walletAddress={walletData.address}
-                  privateKey={walletData.privateKey}
-                  twoFASecret={twoFASecret}
-                />
-                <TwoFactorAuth 
-                  userId={walletData.address}
-                  onSecretGenerated={handleSecretGenerated}
-                />
-              </div>
-              <QuickActions />
+          <div className="space-y-4">
+            <TwoFactorAuth 
+              userId={walletData.address}
+              onSecretGenerated={handleSecretGenerated}
+            />
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Button onClick={() => (window.location.href = "/v1/wallet/login")}>
+                Se connecter au Wallet
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() =>
+                  window.open("https://app.winedge.io/login", "_blank", "noopener,noreferrer")
+                }
+              >
+                Se connecter à l'application Winedge
+              </Button>
             </div>
-            <PriceChart />
           </div>
-          
-          <TransactionHistory address={walletData.address} />
         </div>
       </div>
     </div>
