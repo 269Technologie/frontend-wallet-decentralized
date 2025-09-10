@@ -5,7 +5,9 @@ import WalletSetup from "@/components/wallet/WalletSetup";
 import TwoFactorAuth from "@/components/wallet/TwoFactorAuth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { LogIn, ExternalLink, Sparkles } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { LogIn, ExternalLink, Eye, EyeOff, Copy, Shield, QrCode } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface IndexProps {
   onWalletCreated: (wallet: any) => void;
@@ -20,6 +22,9 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
   } | null>(null);
   const [twoFASecret, setTwoFASecret] = useState<string>("");
   const navigate = useNavigate();
+  const [showMnemonic, setShowMnemonic] = useState(false);
+  const [showWelcome2FA, setShowWelcome2FA] = useState(false);
+  const { toast } = useToast();
 
   const handleWalletCreated = (wallet: {
     address: string;
@@ -29,11 +34,34 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
   }) => {
     setWalletData(wallet);
     localStorage.setItem("walletData", JSON.stringify(wallet));
+    setShowWelcome2FA(true);
     parentOnWalletCreated(wallet);
   };
 
   const handleSecretGenerated = (secret: string) => {
     setTwoFASecret(secret);
+  };
+
+  const handleCopyMnemonic = () => {
+    if (!walletData?.mnemonic) return;
+    navigator.clipboard.writeText(walletData.mnemonic);
+    toast({
+      title: "Copié",
+      description: "Phrase de récupération copiée dans le presse-papiers.",
+    });
+  };
+
+  const handleDownloadMnemonic = () => {
+    if (!walletData?.mnemonic) return;
+    const blob = new Blob([walletData.mnemonic], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "seed-phrase.txt";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   // If no wallet, show setup
@@ -44,20 +72,34 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
-        <div className="space-y-6">
-          <div className="flex justify-center">
-            <Card className="w-full max-w-3xl mx-auto text-center p-6 bg-gradient-to-br from-background to-muted/50 border-border shadow-sm">
-              <div className="flex items-center justify-center gap-2 mb-2 text-primary">
-                <Sparkles className="h-5 w-5" />
-                <span className="text-sm font-medium">Bienvenue</span>
+        <Dialog open={showWelcome2FA} onOpenChange={setShowWelcome2FA}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Shield className="h-5 w-5" />
+                Sécurité du wallet
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 text-center">
+              <div className="flex items-center justify-center">
+                <QrCode className="h-6 w-6 text-primary" />
               </div>
-              <h2 className="text-2xl font-bold mb-2">Bienvenue dans votre Wallet décentralisé</h2>
-              <p className="text-muted-foreground">
-                Si vous souhaitez vous connecter à votre wallet, veuillez d'abord générer et activer le 2FA.
+              <p className="text-sm text-muted-foreground">
+                Pour sécuriser votre wallet, veuillez générer et activer le 2FA. Vous pourrez ensuite vous connecter en toute sécurité.
               </p>
-            </Card>
-          </div>
-          <WalletHeader 
+              <Card className="p-4">
+                <p className="text-sm text-muted-foreground">
+                  Utilisez le bouton “Configurer 2FA” ci-dessous pour générer votre code et valider avec votre application (Google Authenticator, Authy, ...).
+                </p>
+              </Card>
+              <Button className="w-full" onClick={() => setShowWelcome2FA(false)}>
+                J'ai compris
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+        <div className="space-y-6">
+                    <WalletHeader 
             address={walletData.address} 
             privateKey={walletData.privateKey}
             twoFASecret={twoFASecret}
@@ -68,6 +110,48 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
               userId={walletData.address}
               onSecretGenerated={handleSecretGenerated}
             />
+
+            {walletData.mnemonic && (
+              <Card className="p-6 border border-amber-300/50 bg-amber-50/30 dark:bg-amber-500/5">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <h3 className="text-lg font-semibold">Phrase de récupération</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Conservez ces mots en lieu sûr. Ne les partagez jamais. Ils permettent de restaurer l'accès à votre wallet.
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button variant="secondary" size="sm" onClick={() => setShowMnemonic((s) => !s)}>
+                      {showMnemonic ? <EyeOff className="h-4 w-4 mr-2" /> : <Eye className="h-4 w-4 mr-2" />}
+                      {showMnemonic ? "Masquer" : "Afficher"}
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={handleCopyMnemonic}>
+                      <Copy className="h-4 w-4 mr-2" /> Copier
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={handleDownloadMnemonic}>
+                      Télécharger
+                    </Button>
+                  </div>
+                </div>
+                <div className="mt-4">
+                  {showMnemonic ? (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                      {walletData.mnemonic.split(' ').map((word, idx) => (
+                        <div key={idx} className="px-3 py-2 rounded-md bg-muted text-foreground font-mono text-sm">
+                          <span className="text-muted-foreground mr-2">{idx + 1}.</span>
+                          {word}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="h-20 rounded-md bg-muted flex items-center justify-center text-muted-foreground">
+                      Phrase masquée
+                    </div>
+                  )}
+                </div>
+              </Card>
+            )}
+
             <div className="flex flex-col sm:flex-row gap-4">
               <Button
                 onClick={() => navigate("/login")}
