@@ -57,7 +57,7 @@ const Login = () => {
 
     setLoading(true);
     try {
-      const response = await fetch("https://api.winedge.io/v2/wallet/login", {
+      const response = await fetch("https://api.winedge.io/v2/wallet/login/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
