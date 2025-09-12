@@ -105,7 +105,7 @@ const WalletSetup = ({ onWalletCreated }: { onWalletCreated: (walletData: any) =
         <div className="text-center mb-8">
           <Bitcoin className="h-16 w-16 text-primary mx-auto mb-4" />
           <h1 className="text-3xl font-bold text-foreground mb-2">
-            Configuration du Wallet
+            Création & Récupération
           </h1>
           <p className="text-muted-foreground">
             Créez un nouveau wallet ou restaurez un wallet existant
@@ -131,11 +131,18 @@ const WalletSetup = ({ onWalletCreated }: { onWalletCreated: (walletData: any) =
                 Créer un nouveau wallet
               </h2>
                 <p className="text-muted-foreground">
-                  WinEdge n’a pas pu se connecter à votre wallet existant.  
-                  Pas d’inquiétude : un nouveau wallet sécurisé va être généré pour vous, 
-                  avec une phrase de récupération unique.  
-                  Conservez-la précieusement en lieu sûr, car elle est la seule clé 
-                  pour restaurer l’accès à vos fonds.
+                  🔐 Vos fonds, vos clés.
+                      Avec WinEdge, vous êtes l’unique détenteur de vos clés privées. Ni WinEdge ni ses partenaires n’y ont accès.
+
+                      👉 Lors de la création de votre wallet, une phrase de récupération unique (12 ou 24 mots) vous sera remise.
+                      ⚠️ Conservez-la uniquement sur papier, rangée en lieu sûr.
+                      Ne jamais la stocker sur votre téléphone, ordinateur ou par capture d’écran : c’est la seule clé qui protège vos Bitcoins.
+
+                      💡 Ainsi, même en cas de panne ou d’arrêt de l’application, vos cryptos restent toujours accessibles, car elles vous appartiennent réellement.
+
+                      ✨ Notre philosophie :
+                      Not your keys, not your coins.
+                      Avec WinEdge, votre épargne reste 100 % sous votre contrôle
                 </p>
               <div className="space-y-4">
                 <Label>Nombre de mots pour la phrase de récupération</Label>
