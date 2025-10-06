@@ -5,8 +5,7 @@ import WalletSetup from "@/components/wallet/WalletSetup";
 import TwoFactorAuth from "@/components/wallet/TwoFactorAuth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { LogIn, ExternalLink, Eye, EyeOff, Copy, Shield, QrCode } from "lucide-react";
+import { LogIn, ExternalLink, Eye, EyeOff, Copy, QrCode } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface IndexProps {
@@ -72,32 +71,7 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
-        <Dialog open={showWelcome2FA} onOpenChange={setShowWelcome2FA}>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <Shield className="h-5 w-5" />
-                Sécurité du wallet
-              </DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4 text-center">
-              <div className="flex items-center justify-center">
-                <QrCode className="h-6 w-6 text-primary" />
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Pour sécuriser votre wallet, veuillez générer et activer le 2FA. Vous pourrez ensuite vous connecter en toute sécurité.
-              </p>
-              <Card className="p-4">
-                <p className="text-sm text-muted-foreground">
-                  Utilisez le bouton “Configurer 2FA” ci-dessous pour générer votre code et valider avec votre application (Google Authenticator, Authy, ...).
-                </p>
-              </Card>
-              <Button className="w-full" onClick={() => setShowWelcome2FA(false)}>
-                J'ai compris
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+        {/* Welcome 2FA dialog removed as requested */}
         <div className="space-y-6">
                     <WalletHeader 
             address={walletData.address} 
@@ -143,11 +117,7 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
                         </div>
                       ))}
                     </div>
-                  ) : (
-                    <div className="h-20 rounded-md bg-muted flex items-center justify-center text-muted-foreground">
-                      Phrase masquée
-                    </div>
-                  )}
+                  ) : null}
                 </div>
               </Card>
             )}
