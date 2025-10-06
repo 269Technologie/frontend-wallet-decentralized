@@ -67,7 +67,7 @@ const WalletHeader = ({ address, privateKey, twoFASecret }: WalletHeaderProps) =
       const a = document.createElement("a");
       const url = URL.createObjectURL(blob);
       a.href = url;
-      a.download = `${address || "wallet"}.png`;
+      a.download = `${"wallet"}.png`;
       document.body.appendChild(a);
       a.click();
       a.remove();
