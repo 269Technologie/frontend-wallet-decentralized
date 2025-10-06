@@ -107,7 +107,7 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
           
           <div className="space-y-4">
             <TwoFactorAuth 
-              userId={walletData.address}
+              userId={walletData.address} 
               onSecretGenerated={handleSecretGenerated}
             />
 

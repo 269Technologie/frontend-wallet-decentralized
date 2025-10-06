@@ -134,7 +134,7 @@ const WalletSetup = ({ onWalletCreated }: { onWalletCreated: (walletData: any) =
                   🔐 Vos fonds, vos clés.
                       Avec WinEdge, vous êtes l’unique détenteur de vos clés privées. Ni WinEdge ni ses partenaires n’y ont accès.
 
-                      👉 Lors de la création de votre wallet, une phrase de récupération unique (12 ou 24 mots) vous sera remise.
+                      👉 Lors de la création de votre wallet, une phrase de récupération unique (12 mots) vous sera remise.
                       ⚠️ Conservez-la uniquement sur papier, rangée en lieu sûr.
                       Ne jamais la stocker sur votre téléphone, ordinateur ou par capture d’écran : c’est la seule clé qui protège vos Bitcoins.
 
@@ -144,7 +144,7 @@ const WalletSetup = ({ onWalletCreated }: { onWalletCreated: (walletData: any) =
                       Not your keys, not your coins.
                       Avec WinEdge, votre épargne reste 100 % sous votre contrôle
                 </p>
-              <div className="space-y-4">
+              {/* <div className="space-y-4">
                 <Label>Nombre de mots pour la phrase de récupération</Label>
                 <RadioGroup
                   defaultValue="12"
@@ -156,12 +156,12 @@ const WalletSetup = ({ onWalletCreated }: { onWalletCreated: (walletData: any) =
                     <RadioGroupItem value="12" id="r1" />
                     <Label htmlFor="r1">12 mots</Label>
                   </div>
-                  <div className="flex items-center space-x-2">
+                  {/* <div className="flex items-center space-x-2">
                     <RadioGroupItem value="24" id="r2" />
                     <Label htmlFor="r2">24 mots</Label>
-                  </div>
+                  </div> 
                 </RadioGroup>
-              </div>
+              </div> */}
               <Button
                 onClick={createWallet}
                 disabled={loading}
