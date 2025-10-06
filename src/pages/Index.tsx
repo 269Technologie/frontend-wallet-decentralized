@@ -5,6 +5,7 @@ import WalletSetup from "@/components/wallet/WalletSetup";
 import TwoFactorAuth from "@/components/wallet/TwoFactorAuth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { LogIn, ExternalLink, Copy, QrCode } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -24,6 +25,11 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
   const [showWelcome2FA, setShowWelcome2FA] = useState(false);
   const { toast } = useToast();
   const [copiedMnemonic, setCopiedMnemonic] = useState(false);
+  const [detectResult, setDetectResult] = useState<any>(null);
+  const [detecting, setDetecting] = useState(false);
+  const [showExportDialog, setShowExportDialog] = useState(false);
+  const [exportMnemonicInput, setExportMnemonicInput] = useState('');
+  const [exportWifResult, setExportWifResult] = useState<string | null>(null);
 
   const handleWalletCreated = (wallet: {
     address: string;
@@ -62,6 +68,50 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+  };
+
+  const callDetectDerivation = async () => {
+    if (!walletData?.mnemonic || !walletData?.address) return;
+    setDetecting(true);
+    try {
+      const res = await fetch('/v2/wallet/detect', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mnemonic: walletData.mnemonic, address: walletData.address }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setDetectResult(data);
+        toast({ title: 'Dérivation détectée', description: `${data.derivation} @ index ${data.index}` });
+      } else {
+        const err = await res.json();
+        toast({ title: 'Non trouvé', description: err.error || 'Aucune dérivation trouvée' });
+      }
+    } catch (err) {
+      toast({ title: 'Erreur', description: 'Impossible de détecter la dérivation' });
+    } finally {
+      setDetecting(false);
+    }
+  };
+
+  const callExportWif = async (mnemonicToUse: string, derivation: string, index = 0) => {
+    try {
+      const res = await fetch('/v2/wallet/export-wif', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mnemonic: mnemonicToUse, derivation, index }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setExportWifResult(data.wif);
+        toast({ title: 'WIF exporté', description: 'La WIF est prête (affichée dans la boîte).' });
+      } else {
+        const err = await res.json();
+        toast({ title: 'Erreur', description: err.error || 'Impossible d\'exporter la WIF' });
+      }
+    } catch (err) {
+      toast({ title: 'Erreur', description: 'Erreur réseau' });
+    }
   };
 
   // If no wallet, show setup
@@ -137,7 +187,35 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
                     <Button size="sm" variant="ghost" onClick={() => { navigator.clipboard.writeText("m/84'/0'/0'/0/0"); toast({ title: 'Copié', description: 'Derivation copiée' }); }}>Copier</Button>
                   </div>
                 </div>
-
+                <div className="flex gap-2 mt-2">
+                  <Button size="sm" onClick={callDetectDerivation} disabled={detecting}>{detecting ? 'Recherche...' : 'Détecter dérivation'}</Button>
+                  <Dialog open={showExportDialog} onOpenChange={setShowExportDialog}>
+                    <DialogTrigger asChild>
+                      <Button size="sm" variant="outline">Exporter WIF</Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-md">
+                      <DialogHeader>
+                        <DialogTitle>Confirmer export WIF</DialogTitle>
+                        <p className="text-sm text-muted-foreground">Pour des raisons de sécurité, collez la seed phrase ci-dessous pour confirmer l'export de la clé privée (WIF).</p>
+                        <textarea value={exportMnemonicInput} onChange={(e) => setExportMnemonicInput(e.target.value)} className="w-full mt-3 p-2 border rounded" rows={3} />
+                      </DialogHeader>
+                      <DialogFooter>
+                        <div className="w-full flex justify-end gap-2">
+                          <Button variant="ghost" onClick={() => setShowExportDialog(false)}>Annuler</Button>
+                          <Button onClick={() => { setExportWifResult(null); callExportWif(exportMnemonicInput, detectResult?.derivation || 'bip44', detectResult?.index || 0); }}>Confirmer et exporter</Button>
+                        </div>
+                      </DialogFooter>
+                      {exportWifResult && (
+                        <div className="mt-4">
+                          <div className="text-sm font-mono p-2 bg-muted rounded">{exportWifResult}</div>
+                          <div className="mt-2 flex gap-2">
+                            <Button size="sm" onClick={() => { navigator.clipboard.writeText(exportWifResult); toast({ title: 'Copié', description: 'WIF copié' }); }}>Copier WIF</Button>
+                          </div>
+                        </div>
+                      )}
+                    </DialogContent>
+                  </Dialog>
+                </div>
                 <div className="text-sm text-muted-foreground">
                   <div className="mb-2"><strong>Electrum (desktop)</strong>: Créez un nouveau wallet → Standard wallet → I already have a seed → collez la seed → Advanced options pour choisir BIP39 et entrez la derivation (ex: m/44'/0'/0').</div>
                   <div className="mb-2"><strong>Mobile</strong>: BlueWallet / TrustWallet / BRD permettent de restaurer en collant la seed. Si l'adresse ne correspond pas, essayez une des dérivations ci‑dessus.</div>
