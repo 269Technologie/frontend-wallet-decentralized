@@ -111,6 +111,39 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
                     </Button>
                   </div>
                 </div>
+              {/* Restore instructions for external wallets */}
+              <Card className="mt-4 p-4 border border-slate-200 bg-background">
+                <h4 className="text-md font-semibold mb-2">Restaurer ce wallet dans un autre wallet</h4>
+                <p className="text-sm text-muted-foreground mb-3">
+                  Vous pouvez restaurer cette seed phrase dans Electrum (desktop) ou dans un wallet mobile. Choisissez la bonne dérivation selon le type d'adresse.
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-3">
+                  <div className="p-2 rounded border bg-muted/30 text-sm">
+                    <div className="font-medium">Legacy (P2PKH)</div>
+                    <div className="text-xs">Path: m/44'/0'/0'/0/0</div>
+                    <div className="text-xs">Addresses start with 1</div>
+                    <Button size="sm" variant="ghost" onClick={() => { navigator.clipboard.writeText("m/44'/0'/0'/0/0"); toast({ title: 'Copié', description: 'Derivation copiée' }); }}>Copier</Button>
+                  </div>
+                  <div className="p-2 rounded border bg-muted/30 text-sm">
+                    <div className="font-medium">P2SH-SegWit</div>
+                    <div className="text-xs">Path: m/49'/0'/0'/0/0</div>
+                    <div className="text-xs">Addresses start with 3</div>
+                    <Button size="sm" variant="ghost" onClick={() => { navigator.clipboard.writeText("m/49'/0'/0'/0/0"); toast({ title: 'Copié', description: 'Derivation copiée' }); }}>Copier</Button>
+                  </div>
+                  <div className="p-2 rounded border bg-muted/30 text-sm">
+                    <div className="font-medium">Native SegWit (bech32)</div>
+                    <div className="text-xs">Path: m/84'/0'/0'/0/0</div>
+                    <div className="text-xs">Addresses start with bc1</div>
+                    <Button size="sm" variant="ghost" onClick={() => { navigator.clipboard.writeText("m/84'/0'/0'/0/0"); toast({ title: 'Copié', description: 'Derivation copiée' }); }}>Copier</Button>
+                  </div>
+                </div>
+
+                <div className="text-sm text-muted-foreground">
+                  <div className="mb-2"><strong>Electrum (desktop)</strong>: Créez un nouveau wallet → Standard wallet → I already have a seed → collez la seed → Advanced options pour choisir BIP39 et entrez la derivation (ex: m/44'/0'/0').</div>
+                  <div className="mb-2"><strong>Mobile</strong>: BlueWallet / TrustWallet / BRD permettent de restaurer en collant la seed. Si l'adresse ne correspond pas, essayez une des dérivations ci‑dessus.</div>
+                  <div className="mb-2">Si vous voulez que je détecte automatiquement la dérivation pour votre adresse, je peux ajouter un utilitaire qui testera les paths et indiquera lequel correspond.</div>
+                </div>
+              </Card>
                 <div className="mt-4">
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
                       {walletData.mnemonic.split(' ').map((word, idx) => (
