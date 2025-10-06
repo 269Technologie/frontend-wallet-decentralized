@@ -23,6 +23,7 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
   const navigate = useNavigate();
   const [showWelcome2FA, setShowWelcome2FA] = useState(false);
   const { toast } = useToast();
+  const [copiedMnemonic, setCopiedMnemonic] = useState(false);
 
   const handleWalletCreated = (wallet: {
     address: string;
@@ -46,6 +47,8 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
       title: "Copié",
       description: "Phrase de récupération copiée dans le presse-papiers.",
     });
+    setCopiedMnemonic(true);
+    setTimeout(() => setCopiedMnemonic(false), 1500);
   };
 
   const handleDownloadMnemonic = () => {
@@ -93,9 +96,16 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
                     </p>
                   </div>
                   <div className="flex flex-wrap w-full sm:w-auto gap-2">
-                    <Button variant="outline" size="sm" onClick={handleCopyMnemonic} className="flex-1 min-w-[120px]">
-                      <Copy className="h-4 w-4 mr-2" /> Copier
-                    </Button>
+                    <div className="relative flex-1 min-w-[120px]">
+                      {copiedMnemonic && (
+                        <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-muted text-muted-foreground text-xs px-2 py-1 rounded">
+                          Copié
+                        </div>
+                      )}
+                      <Button variant="outline" size="sm" onClick={handleCopyMnemonic} className="w-full">
+                        <Copy className="h-4 w-4 mr-2" /> Copier
+                      </Button>
+                    </div>
                     <Button variant="outline" size="sm" onClick={handleDownloadMnemonic} className="flex-1 min-w-[120px]">
                       Télécharger
                     </Button>
