@@ -47,6 +47,13 @@ const WalletHeader = ({ address, privateKey, twoFASecret }: WalletHeaderProps) =
       description: "L'adresse du wallet a été copiée dans le presse-papiers.",
     });
   };
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    copyToClipboard();
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
 
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=256x256&data=${encodeURIComponent(
     address || ""
@@ -101,14 +108,21 @@ const WalletHeader = ({ address, privateKey, twoFASecret }: WalletHeaderProps) =
               {address}
             </div>
             <div className="flex gap-2 ml-4">
-              <Button 
-                variant="ghost" 
-                size="icon"
-                onClick={copyToClipboard}
-                className="h-8 w-8"
-              >
+              <div className="relative">
+                {copied && (
+                  <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-muted text-muted-foreground text-xs px-2 py-1 rounded">
+                    Copié
+                  </div>
+                )}
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  onClick={handleCopy}
+                  className="h-8 w-8"
+                >
                 <Copy className="h-4 w-4" />
-              </Button>
+                </Button>
+              </div>
               <Dialog>
                 <DialogTrigger asChild>
                   <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -119,19 +133,21 @@ const WalletHeader = ({ address, privateKey, twoFASecret }: WalletHeaderProps) =
                   <DialogHeader>
                     <DialogTitle>QR Code de l'adresse</DialogTitle>
                     <div className="mt-4 flex flex-col items-center gap-3">
-                      <img
-                        src={qrUrl}
-                        alt="QR code"
-                        className="w-48 h-48 bg-white p-2 rounded-md"
-                      />
+                      <div className="bg-white p-3 rounded-lg shadow-md">
+                        <img
+                          src={qrUrl}
+                          alt="QR code"
+                          className="w-48 h-48 rounded-md"
+                        />
+                      </div>
                       <div className="text-sm text-muted-foreground break-words text-center px-2">
                         {address}
                       </div>
                     </div>
                   </DialogHeader>
                   <DialogFooter>
-                    <div className="w-full flex justify-end gap-2">
-                      <Button variant="ghost" onClick={downloadQRCode}>
+                    <div className="w-full flex justify-center gap-2">
+                      <Button variant="default" onClick={downloadQRCode}>
                         Télécharger
                       </Button>
                     </div>
