@@ -1,6 +1,14 @@
 import { Bitcoin, Copy, QrCode, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -16,21 +24,21 @@ const WalletHeader = ({ address, privateKey, twoFASecret }: WalletHeaderProps) =
   const { toast } = useToast();
 
   useEffect(() => {
-    fetchBalance();
-  }, [address]);
-
-  const fetchBalance = async () => {
-    try {
-      const response = await fetch(`https://api.winedge.io/v2/balance/${address}`);
-      if (response.ok) {
-        const data = await response.json();
-        setBalance((data.balance / 100000000).toFixed(8)); // Convert from satoshis to BTC
-        setUsdValue(`$${(data.balance / 100000000 * 43720).toFixed(2)}`); // Assuming BTC price
+    const fetchBalance = async () => {
+      try {
+        const response = await fetch(`https://api.winedge.io/v2/balance/${address}`);
+        if (response.ok) {
+          const data = await response.json();
+          setBalance((data.balance / 100000000).toFixed(8)); // Convert from satoshis to BTC
+          setUsdValue(`$${(data.balance / 100000000 * 43720).toFixed(2)}`); // Assuming BTC price
+        }
+      } catch (error) {
+        console.error("Erreur lors de la récupération du solde:", error);
       }
-    } catch (error) {
-      console.error("Erreur lors de la récupération du solde:", error);
-    }
-  };
+    };
+
+    if (address) fetchBalance();
+  }, [address]);
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(address);
@@ -38,6 +46,32 @@ const WalletHeader = ({ address, privateKey, twoFASecret }: WalletHeaderProps) =
       title: "Adresse copiée",
       description: "L'adresse du wallet a été copiée dans le presse-papiers.",
     });
+  };
+
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=256x256&data=${encodeURIComponent(
+    address || ""
+  )}`;
+
+  const downloadQRCode = async () => {
+    try {
+      const res = await fetch(qrUrl);
+      if (!res.ok) throw new Error("Échec du téléchargement du QR");
+      const blob = await res.blob();
+      const a = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      a.href = url;
+      a.download = `${address || "wallet"}.png`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error(err);
+      toast({
+        title: "Erreur",
+        description: "Impossible de télécharger le QR code.",
+      });
+    }
   };
 
   return (
@@ -75,9 +109,35 @@ const WalletHeader = ({ address, privateKey, twoFASecret }: WalletHeaderProps) =
               >
                 <Copy className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
-                <QrCode className="h-4 w-4" />
-              </Button>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <QrCode className="h-4 w-4" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-sm">
+                  <DialogHeader>
+                    <DialogTitle>QR Code de l'adresse</DialogTitle>
+                    <div className="mt-4 flex flex-col items-center gap-3">
+                      <img
+                        src={qrUrl}
+                        alt="QR code"
+                        className="w-48 h-48 bg-white p-2 rounded-md"
+                      />
+                      <div className="text-sm text-muted-foreground break-words text-center px-2">
+                        {address}
+                      </div>
+                    </div>
+                  </DialogHeader>
+                  <DialogFooter>
+                    <div className="w-full flex justify-end gap-2">
+                      <Button variant="ghost" onClick={downloadQRCode}>
+                        Télécharger
+                      </Button>
+                    </div>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
         </div>
