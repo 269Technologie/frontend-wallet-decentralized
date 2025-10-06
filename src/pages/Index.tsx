@@ -78,10 +78,10 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
           />
           
           <div className="space-y-4">
-            <TwoFactorAuth 
+            {/* <TwoFactorAuth 
               userId={walletData.address} 
               onSecretGenerated={handleSecretGenerated}
-            />
+            /> */}
 
             {walletData.mnemonic && (
               <Card className="p-6 border border-amber-300/50 bg-amber-50/30 dark:bg-amber-500/5">
