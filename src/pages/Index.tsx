@@ -5,7 +5,7 @@ import WalletSetup from "@/components/wallet/WalletSetup";
 import TwoFactorAuth from "@/components/wallet/TwoFactorAuth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { LogIn, ExternalLink, Eye, EyeOff, Copy, QrCode } from "lucide-react";
+import { LogIn, ExternalLink, Copy, QrCode } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface IndexProps {
@@ -21,7 +21,6 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
   } | null>(null);
   const [twoFASecret, setTwoFASecret] = useState<string>("");
   const navigate = useNavigate();
-  const [showMnemonic, setShowMnemonic] = useState(false);
   const [showWelcome2FA, setShowWelcome2FA] = useState(false);
   const { toast } = useToast();
 
@@ -33,7 +32,6 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
   }) => {
     setWalletData(wallet);
     localStorage.setItem("walletData", JSON.stringify(wallet));
-    setShowWelcome2FA(true);
     parentOnWalletCreated(wallet);
   };
 
@@ -95,10 +93,6 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
                     </p>
                   </div>
                   <div className="flex flex-wrap w-full sm:w-auto gap-2">
-                    <Button variant="secondary" size="sm" onClick={() => setShowMnemonic((s) => !s)} className="flex-1 min-w-[120px]">
-                      {showMnemonic ? <EyeOff className="h-4 w-4 mr-2" /> : <Eye className="h-4 w-4 mr-2" />}
-                      {showMnemonic ? "Masquer" : "Afficher"}
-                    </Button>
                     <Button variant="outline" size="sm" onClick={handleCopyMnemonic} className="flex-1 min-w-[120px]">
                       <Copy className="h-4 w-4 mr-2" /> Copier
                     </Button>
@@ -108,7 +102,6 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
                   </div>
                 </div>
                 <div className="mt-4">
-                  {showMnemonic ? (
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
                       {walletData.mnemonic.split(' ').map((word, idx) => (
                         <div key={idx} className="px-2 py-2 rounded-md bg-muted text-foreground font-mono text-xs sm:text-sm break-words">
@@ -117,7 +110,6 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
                         </div>
                       ))}
                     </div>
-                  ) : null}
                 </div>
               </Card>
             )}
