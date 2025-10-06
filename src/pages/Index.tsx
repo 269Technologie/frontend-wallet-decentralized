@@ -222,6 +222,43 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
                   <div className="mb-2">Si vous voulez que je détecte automatiquement la dérivation pour votre adresse, je peux ajouter un utilitaire qui testera les paths et indiquera lequel correspond.</div>
                 </div>
               </Card>
+              {/* Modern restore section */}
+              <Card className="mt-6 p-6 border border-gray-200 bg-gradient-to-r from-white to-slate-50">
+                <div className="flex items-start gap-4">
+                  <div className="p-3 rounded-md bg-primary/10 text-primary">
+                    <QrCode className="h-8 w-8" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold">Restaurer dans un wallet moderne</h3>
+                    <p className="text-sm text-muted-foreground">Suivez ces étapes rapides pour restaurer votre wallet dans Electrum (desktop), Sparrow (desktop) ou un wallet mobile (BlueWallet, Trust).</p>
+
+                    <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div className="p-3 rounded-lg bg-white border">
+                        <div className="font-medium">Electrum (Desktop)</div>
+                        <div className="text-xs text-muted-foreground mt-1">File → New/Restore → Standard → I already have a seed → Advanced → BIP39 + derivation</div>
+                        <div className="mt-3 flex gap-2">
+                          <Button size="sm" onClick={() => { navigator.clipboard.writeText(walletData.mnemonic || ''); toast({ title: 'Seed copiée', description: 'Collez dans Electrum' }); }}>Copier la seed</Button>
+                          <Button size="sm" variant="ghost" onClick={() => { navigator.clipboard.writeText("m/84'/0'/0'/0/0"); toast({ title: 'Path copiée', description: 'm/84\'/0\'/0\'/0/0' }); }}>Copier path</Button>
+                        </div>
+                      </div>
+                      <div className="p-3 rounded-lg bg-white border">
+                        <div className="font-medium">Sparrow (Desktop)</div>
+                        <div className="text-xs text-muted-foreground mt-1">Create wallet → Restore wallet → Use seed phrase → Choose derivation</div>
+                        <div className="mt-3 flex gap-2">
+                          <Button size="sm" onClick={() => { navigator.clipboard.writeText(walletData.mnemonic || ''); toast({ title: 'Seed copiée', description: 'Collez dans Sparrow' }); }}>Copier la seed</Button>
+                        </div>
+                      </div>
+                      <div className="p-3 rounded-lg bg-white border">
+                        <div className="font-medium">Mobile (BlueWallet / Trust)</div>
+                        <div className="text-xs text-muted-foreground mt-1">Restore → paste your seed → choose derivation if prompted</div>
+                        <div className="mt-3 flex gap-2">
+                          <Button size="sm" onClick={() => { navigator.clipboard.writeText(walletData.mnemonic || ''); toast({ title: 'Seed copiée', description: 'Collez dans votre wallet mobile' }); }}>Copier la seed</Button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Card>
                 <div className="mt-4">
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
                       {walletData.mnemonic.split(' ').map((word, idx) => (
