@@ -1,9 +1,9 @@
 import * as bip39 from 'bip39';
-import { BIP32Factory } from 'bip32';
-import ecc from 'tiny-secp256k1';
-import * as bitcoin from 'bitcoinjs-lib';
 
-const bip32 = BIP32Factory(ecc as any);
+// bip32 and tiny-secp256k1 are dynamically imported inside the function to avoid
+// Rollup/Vite resolving them at build-time in environments where node polyfills
+// are unavailable (CI/browser builds). This keeps the bundle smaller and ensures
+// the utility only loads when used (client-side, offline detection).
 
 export type DerivationResult = {
   derivation: 'bip44' | 'bip49' | 'bip84';
@@ -16,8 +16,17 @@ export async function findDerivationLocal(mnemonic: string, targetAddress: strin
   if (!bip39.validateMnemonic(mnemonic)) {
     throw new Error('Mnemonic invalide');
   }
+  // dynamic import of bip32, tiny-secp256k1 and bitcoinjs-lib
+  const [{ BIP32Factory }, tinySecp, bitcoin] = await Promise.all([
+    import('bip32'),
+    import('tiny-secp256k1'),
+    import('bitcoinjs-lib'),
+  ] as any);
+  const ecc = (tinySecp && (tinySecp.default || tinySecp)) as any;
+  const bip32 = BIP32Factory(ecc as any);
+
   const seed = await bip39.mnemonicToSeed(mnemonic);
-  const root = bip32.fromSeed(seed, bitcoin.networks.bitcoin);
+  const root = bip32.fromSeed(seed, (bitcoin && bitcoin.networks && bitcoin.networks.bitcoin) || ({} as any));
 
   const paths: Record<string, string> = {
     bip44: "m/44'/0'/0'/0/",
