@@ -7,6 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { LogIn, ExternalLink, Copy, QrCode } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { findDerivationLocal } from "@/lib/findDerivation";
 import { useToast } from "@/hooks/use-toast";
 
 interface IndexProps {
@@ -30,6 +33,11 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
   const [showExportDialog, setShowExportDialog] = useState(false);
   const [exportMnemonicInput, setExportMnemonicInput] = useState('');
   const [exportWifResult, setExportWifResult] = useState<string | null>(null);
+  const [showDerivationModal, setShowDerivationModal] = useState(false);
+  const [localMnemonicInput, setLocalMnemonicInput] = useState('');
+  const [localTargetAddress, setLocalTargetAddress] = useState(walletData?.address || '');
+  const [localDetecting, setLocalDetecting] = useState(false);
+  const [localDetectResult, setLocalDetectResult] = useState<any>(null);
 
   const handleWalletCreated = (wallet: {
     address: string;
@@ -114,6 +122,30 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
     }
   };
 
+  const handleLocalDetect = async () => {
+    if (!localMnemonicInput || !localTargetAddress) {
+      toast({ title: 'Erreur', description: 'Seed et adresse requises' });
+      return;
+    }
+    setLocalDetecting(true);
+    setLocalDetectResult(null);
+    try {
+      const res = await findDerivationLocal(localMnemonicInput.trim(), localTargetAddress.trim(), 10);
+      if (res) {
+        setLocalDetectResult(res);
+        toast({ title: 'Détection locale', description: `Found ${res.derivation} @ index ${res.index}` });
+      } else {
+        toast({ title: 'Non trouvé', description: 'Aucune dérivation correspondante trouvée (augmenter le max index)' });
+      }
+    } catch (e) {
+      toast({ title: 'Erreur', description: (e as Error).message || 'Erreur lors de la détection' });
+    } finally {
+      setLocalDetecting(false);
+      // zero-out mnemonic input after check to avoid accidental leakage
+      setLocalMnemonicInput('');
+    }
+  };
+
   // If no wallet, show setup
   if (!walletData) {
     return <WalletSetup onWalletCreated={handleWalletCreated} />;
@@ -189,6 +221,37 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
                 </div>
                 <div className="flex gap-2 mt-2">
                   <Button size="sm" onClick={callDetectDerivation} disabled={detecting}>{detecting ? 'Recherche...' : 'Détecter dérivation'}</Button>
+                  <Dialog open={showDerivationModal} onOpenChange={setShowDerivationModal}>
+                    <DialogTrigger asChild>
+                      <Button size="sm" variant="outline">Tester dérivation (local)</Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-md">
+                      <DialogHeader>
+                        <DialogTitle>Tester dérivation localement</DialogTitle>
+                        <p className="text-sm text-muted-foreground">Cette opération s'exécute entièrement dans votre navigateur. Ne collez votre seed nulle part ailleurs.</p>
+                      </DialogHeader>
+                      <div className="mt-2">
+                        <label className="text-xs">Seed phrase</label>
+                        <Input value={localMnemonicInput} onChange={(e) => setLocalMnemonicInput(e.target.value)} placeholder="collez votre seed ici (offline)" />
+                        <label className="text-xs mt-2">Adresse cible</label>
+                        <Input value={localTargetAddress} onChange={(e) => setLocalTargetAddress(e.target.value)} placeholder="adresse (ex: 1ExCS...)" />
+                        <div className="mt-3 flex justify-end gap-2">
+                          <Button variant="ghost" onClick={() => setShowDerivationModal(false)}>Fermer</Button>
+                          <Button onClick={handleLocalDetect} disabled={localDetecting}>{localDetecting ? 'Test...' : 'Lancer le test'}</Button>
+                        </div>
+                        {localDetectResult && (
+                          <div className="mt-3 p-3 border rounded bg-muted text-sm">
+                            <div><strong>Derivation:</strong> {localDetectResult.derivation}</div>
+                            <div><strong>Index:</strong> {localDetectResult.index}</div>
+                            <div className="break-words"><strong>Path:</strong> {localDetectResult.path}</div>
+                            <div className="mt-2 flex gap-2">
+                              <Button size="sm" onClick={() => { navigator.clipboard.writeText(localDetectResult.path); toast({ title: 'Copié', description: 'Path copié' }); }}>Copier path</Button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                   <Dialog open={showExportDialog} onOpenChange={setShowExportDialog}>
                     <DialogTrigger asChild>
                       <Button size="sm" variant="outline">Exporter WIF</Button>
