@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { LogIn, ExternalLink, Copy, QrCode } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { findDerivationLocal } from "@/lib/findDerivation";
 import { useToast } from "@/hooks/use-toast";
@@ -221,7 +220,15 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
                 </div>
                 <div className="flex gap-2 mt-2">
                   <Button size="sm" onClick={callDetectDerivation} disabled={detecting}>{detecting ? 'Recherche...' : 'Détecter dérivation'}</Button>
-                  <Dialog open={showDerivationModal} onOpenChange={setShowDerivationModal}>
+                  <Dialog open={showDerivationModal} onOpenChange={(open) => {
+                    setShowDerivationModal(open);
+                    if (open) {
+                      setLocalTargetAddress(walletData.address || '');
+                    } else {
+                      setLocalMnemonicInput('');
+                      setLocalDetectResult(null);
+                    }
+                  }}>
                     <DialogTrigger asChild>
                       <Button size="sm" variant="outline">Tester dérivation (local)</Button>
                     </DialogTrigger>
