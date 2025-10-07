@@ -192,7 +192,20 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
                     </Button>
                   </div>
                 </div>
-              {/* Restore instructions for external wallets */}
+              {/* removed restore cards from inside the mnemonic Card - placed below to avoid duplication */}
+                <div className="mt-4">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+                      {walletData.mnemonic.split(' ').map((word, idx) => (
+                        <div key={idx} className="px-2 py-2 rounded-md bg-muted text-foreground font-mono text-xs sm:text-sm break-words">
+                          <span className="text-muted-foreground mr-2">{idx + 1}.</span>
+                          {word}
+                        </div>
+                      ))}
+                    </div>
+                </div>
+              </Card>
+
+              {/* Restore instructions (placed outside the Phrase de récupération card) */}
               <Card className="mt-4 p-4 border border-slate-200 bg-background">
                 <h4 className="text-md font-semibold mb-2">Restaurer ce wallet dans un autre wallet</h4>
                 <p className="text-sm text-muted-foreground mb-3">
@@ -292,6 +305,7 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
                   <div className="mb-2">Si vous voulez que je détecte automatiquement la dérivation pour votre adresse, je peux ajouter un utilitaire qui testera les paths et indiquera lequel correspond.</div>
                 </div>
               </Card>
+
               {/* Modern restore section (refined layout) */}
               <Card className="mt-6 p-4 border border-slate-200 bg-white rounded-md shadow-sm">
                 <div className="flex items-start gap-4">
@@ -327,17 +341,6 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
                       </div>
                     </div>
                   </div>
-                </div>
-              </Card>
-                <div className="mt-4">
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-                      {walletData.mnemonic.split(' ').map((word, idx) => (
-                        <div key={idx} className="px-2 py-2 rounded-md bg-muted text-foreground font-mono text-xs sm:text-sm break-words">
-                          <span className="text-muted-foreground mr-2">{idx + 1}.</span>
-                          {word}
-                        </div>
-                      ))}
-                    </div>
                 </div>
               </Card>
             )}
