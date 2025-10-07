@@ -153,7 +153,7 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
-        {/* Welcome 2FA dialog removed as requested */}
+  {/* Welcome 2FA dialog removed as requested */}
         <div className="space-y-6">
                     <WalletHeader 
             address={walletData.address} 
@@ -168,32 +168,24 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
             /> */}
 
             {walletData.mnemonic && (
-              <Card className="p-6 border border-amber-300/50 bg-amber-50/30 dark:bg-amber-500/5">
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-                  <div className="sm:max-w-[60%]">
-                    <h3 className="text-lg font-semibold">Phrase de récupération</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Conservez ces mots en lieu sûr. Ne les partagez jamais. Ils permettent de restaurer l'accès à votre wallet.
-                    </p>
-                  </div>
-                  <div className="flex flex-wrap w-full sm:w-auto gap-2">
-                    <div className="relative flex-1 min-w-[120px]">
-                      {copiedMnemonic && (
-                        <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-muted text-muted-foreground text-xs px-2 py-1 rounded">
-                          Copié
-                        </div>
-                      )}
-                      <Button variant="outline" size="sm" onClick={handleCopyMnemonic} className="w-full">
-                        <Copy className="h-4 w-4 mr-2" /> Copier
-                      </Button>
+              <>
+                <Card className="p-6 border border-amber-300/50 bg-amber-50/30 dark:bg-amber-500/5">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+                    <div className="sm:max-w-[60%]">
+                      <h3 className="text-lg font-semibold">Phrase de récupération</h3>
+                      <p className="text-sm text-muted-foreground">Conservez ces mots en lieu sûr. Ne les partagez jamais. Ils permettent de restaurer l'accès à votre wallet.</p>
                     </div>
-                    <Button variant="outline" size="sm" onClick={handleDownloadMnemonic} className="flex-1 min-w-[120px]">
-                      Télécharger
-                    </Button>
+                    <div className="flex flex-wrap w-full sm:w-auto gap-2">
+                      <div className="relative flex-1 min-w-[120px]">
+                        {copiedMnemonic && (
+                          <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-muted text-muted-foreground text-xs px-2 py-1 rounded">Copié</div>
+                        )}
+                        <Button variant="outline" size="sm" onClick={handleCopyMnemonic} className="w-full"><Copy className="h-4 w-4 mr-2" /> Copier</Button>
+                      </div>
+                      <Button variant="outline" size="sm" onClick={handleDownloadMnemonic} className="flex-1 min-w-[120px]">Télécharger</Button>
+                    </div>
                   </div>
-                </div>
-              {/* removed restore cards from inside the mnemonic Card - placed below to avoid duplication */}
-                <div className="mt-4">
+                  <div className="mt-4">
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
                       {walletData.mnemonic.split(' ').map((word, idx) => (
                         <div key={idx} className="px-2 py-2 rounded-md bg-muted text-foreground font-mono text-xs sm:text-sm break-words">
@@ -202,147 +194,106 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
                         </div>
                       ))}
                     </div>
-                </div>
-              </Card>
+                  </div>
+                </Card>
 
-              {/* Restore instructions (placed outside the Phrase de récupération card) */}
-              <Card className="mt-4 p-4 border border-slate-200 bg-background">
-                <h4 className="text-md font-semibold mb-2">Restaurer ce wallet dans un autre wallet</h4>
-                <p className="text-sm text-muted-foreground mb-3">
-                  Vous pouvez restaurer cette seed phrase dans Electrum (desktop) ou dans un wallet mobile. Choisissez la bonne dérivation selon le type d'adresse.
-                </p>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-3">
-                  <div className="p-2 rounded border bg-muted/30 text-sm">
-                    <div className="font-medium">Legacy (P2PKH)</div>
-                    <div className="text-xs">Path: m/44'/0'/0'/0/0</div>
-                    <div className="text-xs">Addresses start with 1</div>
-                    <Button size="sm" variant="ghost" onClick={() => { navigator.clipboard.writeText("m/44'/0'/0'/0/0"); toast({ title: 'Copié', description: 'Derivation copiée' }); }}>Copier</Button>
+                <Card className="mt-4 p-4 border border-slate-200 bg-background">
+                  <h4 className="text-md font-semibold mb-2">Restaurer ce wallet dans un autre wallet</h4>
+                  <p className="text-sm text-muted-foreground mb-3">Vous pouvez restaurer cette seed phrase dans Electrum (desktop) ou dans un wallet mobile. Choisissez la bonne dérivation selon le type d'adresse.</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-3">
+                    <div className="p-2 rounded border bg-muted/30 text-sm">
+                      <div className="font-medium">Legacy (P2PKH)</div>
+                      <div className="text-xs">Path: m/44'/0'/0'/0/0</div>
+                      <div className="text-xs">Addresses start with 1</div>
+                      <Button size="sm" variant="ghost" onClick={() => { navigator.clipboard.writeText("m/44'/0'/0'/0/0"); toast({ title: 'Copié', description: 'Derivation copiée' }); }}>Copier</Button>
+                    </div>
+                    <div className="p-2 rounded border bg-muted/30 text-sm">
+                      <div className="font-medium">P2SH-SegWit</div>
+                      <div className="text-xs">Path: m/49'/0'/0'/0/0</div>
+                      <div className="text-xs">Addresses start with 3</div>
+                      <Button size="sm" variant="ghost" onClick={() => { navigator.clipboard.writeText("m/49'/0'/0'/0/0"); toast({ title: 'Copié', description: 'Derivation copiée' }); }}>Copier</Button>
+                    </div>
+                    <div className="p-2 rounded border bg-muted/30 text-sm">
+                      <div className="font-medium">Native SegWit (bech32)</div>
+                      <div className="text-xs">Path: m/84'/0'/0'/0/0</div>
+                      <div className="text-xs">Addresses start with bc1</div>
+                      <Button size="sm" variant="ghost" onClick={() => { navigator.clipboard.writeText("m/84'/0'/0'/0/0"); toast({ title: 'Copié', description: 'Derivation copiée' }); }}>Copier</Button>
+                    </div>
                   </div>
-                  <div className="p-2 rounded border bg-muted/30 text-sm">
-                    <div className="font-medium">P2SH-SegWit</div>
-                    <div className="text-xs">Path: m/49'/0'/0'/0/0</div>
-                    <div className="text-xs">Addresses start with 3</div>
-                    <Button size="sm" variant="ghost" onClick={() => { navigator.clipboard.writeText("m/49'/0'/0'/0/0"); toast({ title: 'Copié', description: 'Derivation copiée' }); }}>Copier</Button>
-                  </div>
-                  <div className="p-2 rounded border bg-muted/30 text-sm">
-                    <div className="font-medium">Native SegWit (bech32)</div>
-                    <div className="text-xs">Path: m/84'/0'/0'/0/0</div>
-                    <div className="text-xs">Addresses start with bc1</div>
-                    <Button size="sm" variant="ghost" onClick={() => { navigator.clipboard.writeText("m/84'/0'/0'/0/0"); toast({ title: 'Copié', description: 'Derivation copiée' }); }}>Copier</Button>
-                  </div>
-                </div>
-                <div className="flex gap-2 mt-2">
-                  <Button size="sm" onClick={callDetectDerivation} disabled={detecting}>{detecting ? 'Recherche...' : 'Détecter dérivation'}</Button>
-                  <Dialog open={showDerivationModal} onOpenChange={(open) => {
-                    setShowDerivationModal(open);
-                    if (open) {
-                      setLocalTargetAddress(walletData.address || '');
-                    } else {
-                      setLocalMnemonicInput('');
-                      setLocalDetectResult(null);
-                    }
-                  }}>
-                    <DialogTrigger asChild>
-                      <Button size="sm" variant="outline">Tester dérivation (local)</Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-md">
-                      <DialogHeader>
-                        <DialogTitle>Tester dérivation localement</DialogTitle>
-                        <p className="text-sm text-muted-foreground">Cette opération s'exécute entièrement dans votre navigateur. Ne collez votre seed nulle part ailleurs.</p>
-                      </DialogHeader>
-                      <div className="mt-2">
-                        <label className="text-xs">Seed phrase</label>
-                        <Input value={localMnemonicInput} onChange={(e) => setLocalMnemonicInput(e.target.value)} placeholder="collez votre seed ici (offline)" />
-                        <label className="text-xs mt-2">Adresse cible</label>
-                        <Input value={localTargetAddress} onChange={(e) => setLocalTargetAddress(e.target.value)} placeholder="adresse (ex: 1ExCS...)" />
-                        <div className="mt-3 flex justify-end gap-2">
-                          <Button variant="ghost" onClick={() => setShowDerivationModal(false)}>Fermer</Button>
-                          <Button onClick={handleLocalDetect} disabled={localDetecting}>{localDetecting ? 'Test...' : 'Lancer le test'}</Button>
+
+                  <div className="flex gap-2 mt-2 items-center">
+                    <Button size="sm" onClick={callDetectDerivation} disabled={detecting}>{detecting ? 'Recherche...' : 'Détecter dérivation'}</Button>
+
+                    <Dialog open={showDerivationModal} onOpenChange={(open) => {
+                      setShowDerivationModal(open);
+                      if (open) setLocalTargetAddress(walletData.address || '');
+                      if (!open) { setLocalMnemonicInput(''); setLocalDetectResult(null); }
+                    }}>
+                      <DialogTrigger asChild>
+                        <Button size="sm" variant="outline">Tester dérivation (local)</Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-md">
+                        <DialogHeader>
+                          <DialogTitle>Tester dérivation localement</DialogTitle>
+                          <p className="text-sm text-muted-foreground">Cette opération s'exécute entièrement dans votre navigateur. Ne collez votre seed nulle part ailleurs.</p>
+                        </DialogHeader>
+                        <div className="mt-2">
+                          <label className="text-xs">Seed phrase</label>
+                          <Input value={localMnemonicInput} onChange={(e) => setLocalMnemonicInput(e.target.value)} placeholder="collez votre seed ici (offline)" />
+                          <label className="text-xs mt-2">Adresse cible</label>
+                          <Input value={localTargetAddress} onChange={(e) => setLocalTargetAddress(e.target.value)} placeholder="adresse (ex: 1ExCS...)" />
+                          <div className="mt-3 flex justify-end gap-2">
+                            <Button variant="ghost" onClick={() => setShowDerivationModal(false)}>Fermer</Button>
+                            <Button onClick={handleLocalDetect} disabled={localDetecting}>{localDetecting ? 'Test...' : 'Lancer le test'}</Button>
+                          </div>
+                          {localDetectResult && (
+                            <div className="mt-3 p-3 border rounded bg-muted text-sm">
+                              <div><strong>Derivation:</strong> {localDetectResult.derivation}</div>
+                              <div><strong>Index:</strong> {localDetectResult.index}</div>
+                              <div className="break-words"><strong>Path:</strong> {localDetectResult.path}</div>
+                              <div className="mt-2 flex gap-2">
+                                <Button size="sm" onClick={() => { navigator.clipboard.writeText(localDetectResult.path); toast({ title: 'Copié', description: 'Path copié' }); }}>Copier path</Button>
+                              </div>
+                            </div>
+                          )}
                         </div>
-                        {localDetectResult && (
-                          <div className="mt-3 p-3 border rounded bg-muted text-sm">
-                            <div><strong>Derivation:</strong> {localDetectResult.derivation}</div>
-                            <div><strong>Index:</strong> {localDetectResult.index}</div>
-                            <div className="break-words"><strong>Path:</strong> {localDetectResult.path}</div>
+                      </DialogContent>
+                    </Dialog>
+
+                    <Dialog open={showExportDialog} onOpenChange={setShowExportDialog}>
+                      <DialogTrigger asChild>
+                        <Button size="sm" variant="outline">Exporter WIF</Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-md">
+                        <DialogHeader>
+                          <DialogTitle>Confirmer export WIF</DialogTitle>
+                          <p className="text-sm text-muted-foreground">Pour des raisons de sécurité, collez la seed phrase ci-dessous pour confirmer l'export de la clé privée (WIF).</p>
+                          <textarea value={exportMnemonicInput} onChange={(e) => setExportMnemonicInput(e.target.value)} className="w-full mt-3 p-2 border rounded" rows={3} />
+                        </DialogHeader>
+                        <DialogFooter>
+                          <div className="w-full flex justify-end gap-2">
+                            <Button variant="ghost" onClick={() => setShowExportDialog(false)}>Annuler</Button>
+                            <Button onClick={() => { setExportWifResult(null); callExportWif(exportMnemonicInput, detectResult?.derivation || 'bip44', detectResult?.index || 0); }}>Confirmer et exporter</Button>
+                          </div>
+                        </DialogFooter>
+                        {exportWifResult && (
+                          <div className="mt-4">
+                            <div className="text-sm font-mono p-2 bg-muted rounded">{exportWifResult}</div>
                             <div className="mt-2 flex gap-2">
-                              <Button size="sm" onClick={() => { navigator.clipboard.writeText(localDetectResult.path); toast({ title: 'Copié', description: 'Path copié' }); }}>Copier path</Button>
+                              <Button size="sm" onClick={() => { navigator.clipboard.writeText(exportWifResult); toast({ title: 'Copié', description: 'WIF copié' }); }}>Copier WIF</Button>
                             </div>
                           </div>
                         )}
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-                  <Dialog open={showExportDialog} onOpenChange={setShowExportDialog}>
-                    <DialogTrigger asChild>
-                      <Button size="sm" variant="outline">Exporter WIF</Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-md">
-                      <DialogHeader>
-                        <DialogTitle>Confirmer export WIF</DialogTitle>
-                        <p className="text-sm text-muted-foreground">Pour des raisons de sécurité, collez la seed phrase ci-dessous pour confirmer l'export de la clé privée (WIF).</p>
-                        <textarea value={exportMnemonicInput} onChange={(e) => setExportMnemonicInput(e.target.value)} className="w-full mt-3 p-2 border rounded" rows={3} />
-                      </DialogHeader>
-                      <DialogFooter>
-                        <div className="w-full flex justify-end gap-2">
-                          <Button variant="ghost" onClick={() => setShowExportDialog(false)}>Annuler</Button>
-                          <Button onClick={() => { setExportWifResult(null); callExportWif(exportMnemonicInput, detectResult?.derivation || 'bip44', detectResult?.index || 0); }}>Confirmer et exporter</Button>
-                        </div>
-                      </DialogFooter>
-                      {exportWifResult && (
-                        <div className="mt-4">
-                          <div className="text-sm font-mono p-2 bg-muted rounded">{exportWifResult}</div>
-                          <div className="mt-2 flex gap-2">
-                            <Button size="sm" onClick={() => { navigator.clipboard.writeText(exportWifResult); toast({ title: 'Copié', description: 'WIF copié' }); }}>Copier WIF</Button>
-                          </div>
-                        </div>
-                      )}
-                    </DialogContent>
-                  </Dialog>
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  <div className="mb-2"><strong>Electrum (desktop)</strong>: Créez un nouveau wallet → Standard wallet → I already have a seed → collez la seed → Advanced options pour choisir BIP39 et entrez la derivation (ex: m/44'/0'/0').</div>
-                  <div className="mb-2"><strong>Mobile</strong>: BlueWallet / TrustWallet / BRD permettent de restaurer en collant la seed. Si l'adresse ne correspond pas, essayez une des dérivations ci‑dessus.</div>
-                  <div className="mb-2">Si vous voulez que je détecte automatiquement la dérivation pour votre adresse, je peux ajouter un utilitaire qui testera les paths et indiquera lequel correspond.</div>
-                </div>
-              </Card>
-
-              {/* Modern restore section (refined layout) */}
-              <Card className="mt-6 p-4 border border-slate-200 bg-white rounded-md shadow-sm">
-                <div className="flex items-start gap-4">
-                  <div className="p-3 rounded-md bg-violet-50 text-violet-600">
-                    <QrCode className="h-6 w-6" />
+                      </DialogContent>
+                    </Dialog>
                   </div>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold">Restaurer dans un wallet moderne</h3>
-                    <p className="text-sm text-muted-foreground mt-1">Suivez ces étapes rapides pour restaurer votre wallet dans Electrum (desktop), Sparrow (desktop) ou un wallet mobile (BlueWallet, Trust).</p>
-
-                    <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
-                      <div className="p-3 rounded-md border bg-slate-50">
-                        <div className="font-medium">Electrum (Desktop)</div>
-                        <div className="text-xs text-muted-foreground mt-1">File → New/Restore → Standard → I already have a seed → Advanced → BIP39 + derivation</div>
-                        <div className="mt-3 flex gap-2">
-                          <Button size="sm" className="bg-primary text-primary-foreground" onClick={() => { navigator.clipboard.writeText(walletData.mnemonic || ''); toast({ title: 'Seed copiée', description: 'Collez dans Electrum' }); }}>Copier la seed</Button>
-                          <Button size="sm" variant="ghost" onClick={() => { navigator.clipboard.writeText("m/84'/0'/0'/0/0"); toast({ title: 'Path copiée', description: "m/84'/0'/0'/0/0" }); }}>Copier path</Button>
-                        </div>
-                      </div>
-                      <div className="p-3 rounded-md border bg-slate-50">
-                        <div className="font-medium">Sparrow (Desktop)</div>
-                        <div className="text-xs text-muted-foreground mt-1">Create wallet → Restore wallet → Use seed phrase → Choose derivation</div>
-                        <div className="mt-3 flex gap-2">
-                          <Button size="sm" className="bg-primary text-primary-foreground" onClick={() => { navigator.clipboard.writeText(walletData.mnemonic || ''); toast({ title: 'Seed copiée', description: 'Collez dans Sparrow' }); }}>Copier la seed</Button>
-                        </div>
-                      </div>
-                      <div className="p-3 rounded-md border bg-slate-50">
-                        <div className="font-medium">Mobile (BlueWallet / Trust)</div>
-                        <div className="text-xs text-muted-foreground mt-1">Restore → paste your seed → choose derivation if prompted</div>
-                        <div className="mt-3 flex gap-2">
-                          <Button size="sm" className="bg-primary text-primary-foreground" onClick={() => { navigator.clipboard.writeText(walletData.mnemonic || ''); toast({ title: 'Seed copiée', description: 'Collez dans votre wallet mobile' }); }}>Copier la seed</Button>
-                        </div>
-                      </div>
-                    </div>
+                  <div className="text-sm text-muted-foreground mt-3">
+                    <div className="mb-2"><strong>Electrum (desktop)</strong>: Créez un nouveau wallet → Standard wallet → I already have a seed → collez la seed → Advanced options pour choisir BIP39 et entrez la derivation (ex: m/44'/0'/0').</div>
+                    <div className="mb-2"><strong>Mobile</strong>: BlueWallet / TrustWallet / BRD permettent de restaurer en collant la seed. Si l'adresse ne correspond pas, essayez une des dérivations ci‑dessus.</div>
+                    <div className="mb-2">Si vous voulez que je détecte automatiquement la dérivation pour votre adresse, je peux ajouter un utilitaire qui testera les paths et indiquera lequel correspond.</div>
                   </div>
-                </div>
-              </Card>
+                </Card>
+              </>
             )}
 
             <div className="flex flex-col sm:flex-row gap-4">
