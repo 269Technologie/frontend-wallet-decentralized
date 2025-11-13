@@ -137,7 +137,7 @@ const WalletSetup = ({ onWalletCreated }: { onWalletCreated: (walletData: any) =
               className="w-full h-14 text-lg bg-blue-600 hover:bg-blue-700"
               size="lg"
             >
-              {loading ? "Création en cours..." : "Créer un nouveau wallet"}
+              {loading ? "Création en cours..." : "Créer un portefeuille"}
             </Button>
             </div>
           </div>
