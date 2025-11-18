@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -12,8 +11,25 @@ const Login = () => {
   const [address, setAddress] = useState("");
   const [twoFACode, setTwoFACode] = useState("");
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
   const { toast } = useToast();
+
+  // Fonction de validation d'adresse Bitcoin
+  const isValidBitcoinAddress = (addr: string): boolean => {
+    // Vérifier si l'adresse est vide
+    if (!addr || addr.trim() === "") return false;
+
+    // Regex pour les différents formats d'adresses Bitcoin
+    const p2pkhRegex = /^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$/; // Legacy (commence par 1 ou 3)
+    const bech32Regex = /^(bc1|tb1)[a-z0-9]{39,87}$/i; // SegWit (commence par bc1)
+    const bech32mRegex = /^(bc1p|tb1p)[a-z0-9]{58,}$/i; // Taproot (commence par bc1p)
+
+    // Tester tous les formats
+    return (
+      p2pkhRegex.test(addr) ||
+      bech32Regex.test(addr) ||
+      bech32mRegex.test(addr)
+    );
+  };
 
   const handleAddressSubmit = async () => {
     if (!address) {
@@ -25,11 +41,25 @@ const Login = () => {
       return;
     }
 
+    // Validation du format de l'adresse Bitcoin
+    if (!isValidBitcoinAddress(address)) {
+      toast({
+        title: "Adresse invalide",
+        description: "Le format de l'adresse Bitcoin n'est pas valide. Veuillez vérifier et réessayer.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
     try {
       // Vérifie si l'adresse existe et a le 2FA activé
       const response = await fetch(`https://api.winedge.io/v2/wallet/verify/${address}`);
       if (response.ok) {
+        toast({
+          title: "Adresse vérifiée",
+          description: "Veuillez entrer votre code 2FA",
+        });
         setStep("2fa");
       } else {
         throw new Error("Adresse non trouvée ou 2FA non activé");
@@ -37,7 +67,7 @@ const Login = () => {
     } catch (error) {
       toast({
         title: "Erreur",
-        description: "Impossible de vérifier l'adresse",
+        description: "Adresse non trouvée ou 2FA non activé sur cette adresse",
         variant: "destructive",
       });
     } finally {
@@ -50,6 +80,15 @@ const Login = () => {
       toast({
         title: "Erreur",
         description: "Veuillez entrer le code 2FA",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (twoFACode.length !== 6 || !/^\d+$/.test(twoFACode)) {
+      toast({
+        title: "Code invalide",
+        description: "Le code 2FA doit contenir exactement 6 chiffres",
         variant: "destructive",
       });
       return;
@@ -76,16 +115,18 @@ const Login = () => {
           title: "Connexion réussie",
           description: "Bienvenue dans votre wallet",
         });
-        navigate("/dashboard");
+        // Redirection vers le dashboard (à implémenter selon votre routing)
+        console.log("Redirection vers dashboard avec les données:", walletData);
       } else {
         throw new Error("Code 2FA invalide");
       }
     } catch (error) {
       toast({
         title: "Erreur",
-        description: "Code 2FA incorrect",
+        description: "Code 2FA incorrect. Veuillez réessayer.",
         variant: "destructive",
       });
+      setTwoFACode(""); // Réinitialise le code pour réessayer
     } finally {
       setLoading(false);
     }
@@ -113,6 +154,7 @@ const Login = () => {
                   className="pl-10"
                 />
               </div>
+              
             </div>
 
             <Button
@@ -131,9 +173,11 @@ const Login = () => {
                 <Lock className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
                 <Input
                   id="2fa"
+                  type="text"
+                  inputMode="numeric"
                   placeholder="Code à 6 chiffres"
                   value={twoFACode}
-                  onChange={(e) => setTwoFACode(e.target.value)}
+                  onChange={(e) => setTwoFACode(e.target.value.replace(/\D/g, ""))}
                   maxLength={6}
                   className="pl-10"
                 />
@@ -146,14 +190,17 @@ const Login = () => {
             <div className="space-y-2">
               <Button
                 onClick={handleLogin}
-                disabled={loading || !twoFACode}
+                disabled={loading || twoFACode.length !== 6}
                 className="w-full"
               >
                 {loading ? "Connexion..." : "Se connecter"}
               </Button>
               <Button
                 variant="outline"
-                onClick={() => setStep("address")}
+                onClick={() => {
+                  setStep("address");
+                  setTwoFACode("");
+                }}
                 className="w-full"
               >
                 Retour
