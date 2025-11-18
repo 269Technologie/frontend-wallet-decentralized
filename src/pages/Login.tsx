@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Toaster } from "@/components/ui/toaster";
 import { Bitcoin, Lock, KeyRound } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -134,6 +135,7 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <Toaster />
       <Card className="w-full max-w-md p-8">
         <div className="text-center mb-8">
           <Bitcoin className="h-12 w-12 text-primary mx-auto mb-4" />
@@ -154,7 +156,7 @@ const Login = () => {
                   className="pl-10"
                 />
               </div>
-              
+             
             </div>
 
             <Button
