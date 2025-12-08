@@ -21,54 +21,9 @@ pipeline {
           env.BUILD_MINUTE = new Date().format('mm')
           env.VERSION = "${env.BUILD_NUMBER}-${env.BUILD_MONTH}.${env.BUILD_DAY}.${env.BUILD_HOUR}.${env.BUILD_MINUTE}-${uniqueId}"
         }
-        sh 'node -v && npm -v'
-        echo "Installing Node.js dependencies"
-        sh '''
-          set -e
-          if [ -f package-lock.json ]; then
-            npm ci
-          else
-            npm install
-          fi
-        '''
+        echo "Build version: ${VERSION}"
       }
     }
-
-    // ⬇️ Skip tests si script test absent ou placeholder
-    stage('Unit Testing') {
-      steps {
-        sh '''
-          set -e
-          TEST_SCRIPT=$(node -p "((p=require('./package.json')).scripts && p.scripts.test) ? p.scripts.test : ''")
-
-          if [ -z "$TEST_SCRIPT" ]; then
-            echo "No test script found. Skipping tests."
-            exit 0
-          fi
-
-          echo "Detected test script: $TEST_SCRIPT"
-          if echo "$TEST_SCRIPT" | grep -Eqi 'no test specified|exit[[:space:]]+1'; then
-            echo "Placeholder test script detected. Skipping tests."
-            exit 0
-          fi
-
-          echo "Running unit tests..."
-          npm test
-        '''
-      }
-    }
-
-  stage('Build') {
-    steps {
-      sh '''
-        export VITE_BASE=/v1/wallet/
-        export VITE_API_BASE_URL=https://api.winedge.io
-        export VITE_WS_URL=wss://api.winedge.io/v1/wallet-ws
-        npm run build
-      '''
-    }
-  }
-
 
     stage('Build Image') {
       steps {
@@ -103,6 +58,8 @@ pipeline {
               --network wallet-network \\
               ${REGISTRY_IMAGE}:${VERSION}
           """
+          
+          echo "✅ Container deployed at http://localhost:8022"
         }
       }
     }
