@@ -175,15 +175,6 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
                       <h3 className="text-lg font-semibold">Phrase de récupération</h3>
                       <p className="text-sm text-muted-foreground">Conservez ces mots en lieu sûr. Ne les partagez jamais. Ils permettent de restaurer l'accès à votre wallet.</p>
                     </div>
-                    <div className="flex flex-wrap w-full sm:w-auto gap-2">
-                      <div className="relative flex-1 min-w-[120px]">
-                        {copiedMnemonic && (
-                          <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-muted text-muted-foreground text-xs px-2 py-1 rounded">Copié</div>
-                        )}
-                        <Button variant="outline" size="sm" onClick={handleCopyMnemonic} className="w-full"><Copy className="h-4 w-4 mr-2" /> Copier</Button>
-                      </div>
-                      <Button variant="outline" size="sm" onClick={handleDownloadMnemonic} className="flex-1 min-w-[120px]">Télécharger</Button>
-                    </div>
                   </div>
                   <div className="mt-4">
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
