@@ -124,7 +124,7 @@ const WalletSetup = ({ onWalletCreated }: { onWalletCreated: (walletData: any) =
               <Button
                 onClick={() => setCurrentView("restore")}
                 variant="outline"
-                className="w-full h-14 text-lg font-medium border-2 border-gray-300 hover:bg-gray-50"
+                className="w-full h-14 text-lg font-medium border-2 border-gray-300 hover:bg-gray-100 hover:text-black"
                 size="lg"
               >
                 <ArrowRight className="h-5 w-5 mr-2" />
