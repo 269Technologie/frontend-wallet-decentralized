@@ -1,108 +1,39 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Bitcoin, ArrowRight, ArrowLeft } from "lucide-react";
+import { Bitcoin, ArrowRight } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { useToast } from "@/hooks/use-toast";
+import CreateWalletFlow from "./CreateWalletFlow";
+import ConnectWalletFlow from "./ConnectWalletFlow";
 
 const WalletSetup = ({ onWalletCreated }: { onWalletCreated: (walletData: any) => void }) => {
-  const [loading, setLoading] = useState(false);
-  const [currentView, setCurrentView] = useState<"menu" | "create" | "restore">("menu");
-  const [mnemonic, setMnemonic] = useState("");
-  const [wordCount] = useState("12");
-  const { toast } = useToast();
+  const [loading] = useState(false);
+  const [currentView, setCurrentView] = useState<"menu" | "create" | "connect">("menu");
 
-  const createWallet = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch("https://api.winedge.io/v2/wallet/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          words: parseInt(wordCount)
-        })
-      });
-      
-      if (response.ok) {
-        const walletData = await response.json();
-        console.log("Données du wallet reçues:", walletData);
-        toast({
-          title: "Wallet créé avec succès",
-          description: "Votre nouveau wallet Bitcoin a été généré.",
-        });
-        onWalletCreated(walletData);
-      } else {
-        const errorData = await response.text();
-        console.error("Réponse du serveur:", {
-          status: response.status,
-          statusText: response.statusText,
-          body: errorData
-        });
-        throw new Error(`Erreur lors de la création du wallet: ${response.status} ${response.statusText}`);
-      }
-    } catch (error) {
-      console.error("Erreur lors de la création du wallet:", error);
-      toast({
-        title: "Erreur",
-        description: "Impossible de créer le wallet. Vérifiez que le backend est en marche.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Vue création de wallet avec le nouveau flow
+  if (currentView === "create") {
+    return (
+      <CreateWalletFlow 
+        onWalletCreated={onWalletCreated}
+        onCancel={() => setCurrentView("menu")}
+      />
+    );
+  }
 
-  const restoreWallet = async () => {
-    if (!mnemonic.trim()) {
-      toast({
-        title: "Erreur",
-        description: "Veuillez entrer une phrase de récupération valide.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const response = await fetch("https://api.winedge.io/v2/wallet/restore", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ mnemonic }),
-      });
-      
-      if (response.ok) {
-        const walletData = await response.json();
-        toast({
-          title: "Wallet restauré avec succès",
-          description: "Votre wallet a été restauré à partir de la phrase de récupération.",
-        });
-        onWalletCreated(walletData);
-      } else {
-        throw new Error("Erreur lors de la restauration du wallet");
-      }
-    } catch (error) {
-      console.error("Erreur lors de la restauration du wallet:", error);
-      toast({
-        title: "Erreur",
-        description: "Impossible de restaurer le wallet. Vérifiez votre phrase de récupération.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Vue connexion d'un wallet existant
+  if (currentView === "connect") {
+    return (
+      <ConnectWalletFlow 
+        onWalletConnected={onWalletCreated}
+        onCancel={() => setCurrentView("menu")}
+      />
+    );
+  }
 
   // Vue Menu Principal
   if (currentView === "menu") {
@@ -122,7 +53,16 @@ const WalletSetup = ({ onWalletCreated }: { onWalletCreated: (walletData: any) =
 
             <div className="space-y-4 pt-4">
               <Button
-                onClick={() => setCurrentView("restore")}
+                onClick={() => setCurrentView("create")}
+                disabled={loading}
+                className="w-full h-14 text-lg bg-blue-600 hover:bg-blue-700"
+                size="lg"
+              >
+                Créer un portefeuille
+              </Button>
+
+              <Button
+                onClick={() => setCurrentView("connect")}
                 variant="outline"
                 className="w-full h-14 text-lg font-medium border-2 border-gray-300 hover:bg-gray-100 hover:text-black"
                 size="lg"
@@ -130,15 +70,6 @@ const WalletSetup = ({ onWalletCreated }: { onWalletCreated: (walletData: any) =
                 <ArrowRight className="h-5 w-5 mr-2" />
                 Saisir un portefeuille
               </Button>
-
-              <Button
-              onClick={createWallet}
-              disabled={loading}
-              className="w-full h-14 text-lg bg-blue-600 hover:bg-blue-700"
-              size="lg"
-            >
-              {loading ? "Création en cours..." : "Créer un portefeuille"}
-            </Button>
             </div>
           </div>
 
@@ -307,62 +238,6 @@ const WalletSetup = ({ onWalletCreated }: { onWalletCreated: (walletData: any) =
             </Accordion>
           </div>
         </div>
-      </div>
-    );
-  }
-
-  // Vue Restauration de Wallet
-  if (currentView === "restore") {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center p-4">
-        <Card className="w-full max-w-2xl p-8">
-          <Button
-            onClick={() => setCurrentView("menu")}
-            variant="ghost"
-            className="mb-6"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Retour
-          </Button>
-
-          <div className="space-y-6">
-            <div className="text-center">
-              <Bitcoin className="h-16 w-16 text-blue-600 mx-auto mb-4" />
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">
-                Restaurer un wallet
-              </h2>
-              <p className="text-gray-600">
-                Récupérez l'accès à votre wallet existant
-              </p>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="mnemonic" className="text-base font-medium text-gray-900">
-                  Phrase de récupération (seed phrase)
-                </Label>
-                <p className="text-sm text-gray-600 mb-3">
-                  Entrez votre phrase de récupération de 12 ou 24 mots
-                </p>
-                <Textarea
-                  id="mnemonic"
-                  placeholder="word1 word2 word3 word4 word5 word6 word7 word8 word9 word10 word11 word12"
-                  value={mnemonic}
-                  onChange={(e) => setMnemonic(e.target.value)}
-                  className="min-h-32 resize-none"
-                />
-              </div>
-              <Button
-                onClick={restoreWallet}
-                disabled={loading || !mnemonic.trim()}
-                className="w-full h-14 text-lg bg-blue-600 hover:bg-blue-700"
-                size="lg"
-              >
-                {loading ? "Restauration en cours..." : "Restaurer le wallet"}
-              </Button>
-            </div>
-          </div>
-        </Card>
       </div>
     );
   }
