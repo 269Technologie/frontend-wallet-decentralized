@@ -52,14 +52,6 @@ const WalletSetup = ({ onWalletCreated }: { onWalletCreated: (walletData: any) =
             </p>
 
             <div className="space-y-4 pt-4">
-              <Button
-                onClick={() => setCurrentView("create")}
-                disabled={loading}
-                className="w-full h-14 text-lg bg-blue-600 hover:bg-blue-700"
-                size="lg"
-              >
-                Créer un portefeuille
-              </Button>
 
               <Button
                 onClick={() => setCurrentView("connect")}
@@ -70,6 +62,18 @@ const WalletSetup = ({ onWalletCreated }: { onWalletCreated: (walletData: any) =
                 <ArrowRight className="h-5 w-5 mr-2" />
                 Saisir un portefeuille
               </Button>
+
+              
+              <Button
+                onClick={() => setCurrentView("create")}
+                disabled={loading}
+                className="w-full h-14 text-lg bg-blue-600 hover:bg-blue-700"
+                size="lg"
+              >
+                Créer un portefeuille
+              </Button>
+
+              
             </div>
           </div>
 
