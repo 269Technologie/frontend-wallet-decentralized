@@ -1,19 +1,9 @@
 import { Button } from "@/components/ui/button";
-import { Plus, Unlock, Home } from "lucide-react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { Plus, Unlock, Home, Wallet } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-interface StickyMenuProps {
-  showOnPages?: string[];
-}
-
-const StickyMenu = ({ showOnPages = ["/dashboard", "/create", "/connect"] }: StickyMenuProps) => {
+const StickyMenu = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  
-  // Ne pas afficher le menu si on n'est pas sur les pages spécifiées
-  if (!showOnPages.includes(location.pathname)) {
-    return null;
-  }
 
   const handleCreateWallet = () => {
     navigate("/", { state: { action: "create" } });
@@ -24,49 +14,61 @@ const StickyMenu = ({ showOnPages = ["/dashboard", "/create", "/connect"] }: Sti
   };
 
   const handleBackToDashboard = () => {
-    navigate("/dashboard");
+    window.location.href = "https://app.winedge.io/mon-compte?tab=settings";
+  };
+
+  const handleHome = () => {
+    navigate("/");
   };
 
   return (
-    <div className="fixed left-0 top-1/2 transform -translate-y-1/2 z-40 p-4">
-      <div className="flex flex-col gap-3 bg-background/80 backdrop-blur-md rounded-full p-3 border border-border/40 shadow-lg">
-        {/* Créer son wallet */}
-        <Button
-          onClick={handleCreateWallet}
-          className="rounded-full w-12 h-12 p-0 flex items-center justify-center bg-blue-600 hover:bg-blue-700 transition-all duration-200 tooltip-container group"
-          title="Créer un wallet"
-        >
-          <Plus className="h-5 w-5" />
-          <span className="absolute left-16 bg-gray-900 text-white text-sm rounded px-3 py-2 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
-            Créer son wallet
-          </span>
-        </Button>
+    <nav className="sticky">
+      <div className="container mx-auto px-4 py-3">
+        <div className="flex items-center justify-between">
+          {/* Logo / Brand */}
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <Wallet className="h-6 w-6 text-blue-600" />
+              <span className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                Winedge
+              </span>
+            </div>
+          </div>
 
-        {/* Saisir son wallet */}
-        <Button
-          onClick={handleImportWallet}
-          className="rounded-full w-12 h-12 p-0 flex items-center justify-center bg-green-600 hover:bg-green-700 transition-all duration-200 tooltip-container group"
-          title="Saisir un wallet"
-        >
-          <Unlock className="h-5 w-5" />
-          <span className="absolute left-16 bg-gray-900 text-white text-sm rounded px-3 py-2 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
-            Saisir son wallet
-          </span>
-        </Button>
+          {/* Navigation Buttons */}
+          <div className="flex items-center gap-2">
+{/* 
+            <Button
+              onClick={handleCreateWallet}
+              size="sm"
+              className="gap-2 bg-blue-600 hover:bg-blue-700"
+            >
+              <Plus className="h-4 w-4" />
+              <span className="hidden sm:inline">Créer wallet</span>
+            </Button>
 
-        {/* Retour au dashboard */}
-        <Button
-          onClick={handleBackToDashboard}
-          className="rounded-full w-12 h-12 p-0 flex items-center justify-center bg-purple-600 hover:bg-purple-700 transition-all duration-200 tooltip-container group"
-          title="Retour au dashboard"
-        >
-          <Home className="h-5 w-5" />
-          <span className="absolute left-16 bg-gray-900 text-white text-sm rounded px-3 py-2 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
-            Retour au dashboard
-          </span>
-        </Button>
+            <Button
+              onClick={handleImportWallet}
+              size="sm"
+              className="gap-2 bg-green-600 hover:bg-green-700"
+            >
+              <Unlock className="h-4 w-4" />
+              <span className="hidden sm:inline">Saisir un wallet</span>
+            </Button> */}
+
+            <Button
+              onClick={handleBackToDashboard}
+              variant="outline"
+              size="sm"
+              className="gap-2"
+            >
+              <Home className="h-4 w-4" />
+              <span className="hidden sm:inline">Retourner au compte</span>
+            </Button>
+          </div>
+        </div>
       </div>
-    </div>
+    </nav>
   );
 };
 

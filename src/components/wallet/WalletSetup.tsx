@@ -10,6 +10,8 @@ import {
 } from "@/components/ui/accordion";
 import CreateWalletFlow from "./CreateWalletFlow";
 import ConnectWalletFlow from "./ConnectWalletFlow";
+import StickyMenu from "./StickyMenu";
+
 
 const WalletSetup = ({ onWalletCreated }: { onWalletCreated: (walletData: any) => void }) => {
   const [loading] = useState(false);
@@ -41,12 +43,13 @@ const WalletSetup = ({ onWalletCreated }: { onWalletCreated: (walletData: any) =
       <div className="min-h-screen bg-white flex flex-col items-center justify-start p-4 pt-12">
         <div className="w-full max-w-2xl space-y-8">
           <div className="text-center space-y-6">
+            <StickyMenu />
+
             <Bitcoin className="h-20 w-20 text-blue-600 mx-auto" />
             
             <h1 className="text-4xl font-bold text-gray-900">
               Création & Récupération
             </h1>
-            
             <p className="text-xl text-gray-600">
               Saisissez un portefeuille ou créez un portefeuille décentralisé
             </p>
