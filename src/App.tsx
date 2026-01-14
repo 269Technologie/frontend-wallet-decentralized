@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
+import StickyMenu from "./components/wallet/StickyMenu";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +41,7 @@ const App = () => {
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <StickyMenu />
         <Routes>
           <Route 
             path="/" 
