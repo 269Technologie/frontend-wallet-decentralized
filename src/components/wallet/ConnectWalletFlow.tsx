@@ -18,38 +18,30 @@ const ConnectWalletFlow = ({ onWalletConnected, onCancel }: ConnectWalletFlowPro
   const [isValid, setIsValid] = useState<boolean | null>(null);
   const { toast } = useToast();
 
-  // Fonction de validation d'adresse Bitcoin
-  const validateBitcoinAddress = (address: string): boolean => {
+  // Fonction de validation de phrase de récupération
+  const validateRecoveryPhrase = (phrase: string): boolean => {
     try {
-      // Vérifier les formats d'adresse Bitcoin courants
-      // Legacy (P2PKH): commence par "1"
-      // Script (P2SH): commence par "3"
-      // SegWit (Bech32): commence par "bc1"
-      
-      if (!address || address.trim().length === 0) {
+      if (!phrase || phrase.trim().length === 0) {
         return false;
       }
-
-      // Vérification basique du format
-      if (address.startsWith('1') || address.startsWith('3')) {
-        // Legacy ou P2SH
-        try {
-          bitcoin.address.toOutputScript(address, bitcoin.networks.bitcoin);
-          return true;
-        } catch (e) {
-          return false;
-        }
-      } else if (address.toLowerCase().startsWith('bc1')) {
-        // Bech32 (SegWit)
-        try {
-          bitcoin.address.toOutputScript(address, bitcoin.networks.bitcoin);
-          return true;
-        } catch (e) {
+      
+      // Diviser la phrase en mots
+      const words = phrase.trim().split(/\s+/);
+      
+      // Vérifier qu'il y a 12 ou 24 mots
+      if (words.length !== 12 && words.length !== 24) {
+        return false;
+      }
+      
+      // Vérifier que chaque mot ne contient que des caractères alphabétiques minuscules
+      const wordPattern = /^[a-z]+$/;
+      for (const word of words) {
+        if (!wordPattern.test(word)) {
           return false;
         }
       }
       
-      return false;
+      return true;
     } catch (error) {
       return false;
     }
@@ -71,31 +63,29 @@ const ConnectWalletFlow = ({ onWalletConnected, onCancel }: ConnectWalletFlowPro
         <div className="space-y-6">
           <div className="text-center">
             <Bitcoin className="h-16 w-16 text-blue-600 mx-auto mb-4" />
-            <h1 className="text-3xl font-bold text-gray-900">Connecter un wallet existant</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Importer Votre Wallet</h1>
             <p className="text-gray-600 mt-2">
-              Saisissez votre adresse Bitcoin pour recevoir vos arrondis
+              Entrez votre phrase de récupération existante (12 ou 24 mots)
             </p>
           </div>
 
           <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-6">
-            <h3 className="font-bold text-blue-900 text-lg mb-3">📋 Instructions</h3>
-            <ol className="space-y-2 text-blue-900 list-decimal list-inside">
-              <li>Ouvrez votre wallet Bitcoin existant (MetaMask, Ledger, Trezor, etc.)</li>
-              <li>Copiez votre adresse de réception Bitcoin</li>
-              <li>Collez cette adresse dans le champ ci-dessous</li>
-            </ol>
+            <h3 className="font-bold text-blue-900 text-lg mb-3">Votre phrase de récupération</h3>
+            <p className="text-blue-900 mb-3">Entrez vos 12 ou 24 mots séparés par des espaces</p>
+            <p className="text-blue-900 font-mono text-sm bg-blue-100 p-2 rounded">Exemple: trophy about rate deliver ketchup ginger...</p>
+            <p className="text-blue-900 mt-3">Les mots doivent être dans l'ordre exact de votre sauvegarde</p>
           </div>
 
           <div className="space-y-3">
             <label className="text-sm font-medium text-gray-900">
-              Adresse Bitcoin (BTC)
+              Votre phrase de récupération
             </label>
             <p className="text-sm text-gray-600 mb-2">
-              L'adresse commence généralement par "bc1...", "1..." ou "3..."
+              Entrez vos 12 ou 24 mots séparés par des espaces
             </p>
             <Input
               type="text"
-              placeholder="bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh"
+              placeholder="Entrez votre phrase de récupération de 12 ou 24 mots..."
               value={bitcoinAddress}
               onChange={(e) => {
                 setBitcoinAddress(e.target.value);
@@ -107,8 +97,7 @@ const ConnectWalletFlow = ({ onWalletConnected, onCancel }: ConnectWalletFlowPro
 
           <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
             <p className="text-sm text-amber-900">
-              <strong>⚠️ Important :</strong> Assurez-vous de saisir une adresse <strong>Bitcoin (BTC)</strong> uniquement. 
-              Les adresses Ethereum, Binance ou autres cryptomonnaies ne fonctionneront pas.
+              <strong>⚠️ Avertissement Sécurité :</strong> Assurez-vous d'être seul et dans un environnement sûr. Ne partagez JAMAIS votre phrase de récupération.
             </p>
           </div>
 
@@ -117,7 +106,7 @@ const ConnectWalletFlow = ({ onWalletConnected, onCancel }: ConnectWalletFlowPro
               if (!bitcoinAddress.trim()) {
                 toast({
                   title: "Erreur",
-                  description: "Veuillez saisir une adresse Bitcoin",
+                  description: "Veuillez saisir votre phrase de récupération",
                   variant: "destructive",
                 });
                 return;
@@ -127,7 +116,7 @@ const ConnectWalletFlow = ({ onWalletConnected, onCancel }: ConnectWalletFlowPro
             className="w-full h-14 text-lg bg-blue-600 hover:bg-blue-700"
             disabled={!bitcoinAddress.trim()}
           >
-            Vérifier l'adresse
+            Importer mon Wallet
           </Button>
         </div>
       </Card>
@@ -141,19 +130,19 @@ const ConnectWalletFlow = ({ onWalletConnected, onCancel }: ConnectWalletFlowPro
     // Simuler une vérification (ajouter un délai pour l'UX)
     await new Promise(resolve => setTimeout(resolve, 1500));
     
-    const valid = validateBitcoinAddress(bitcoinAddress.trim());
+    const valid = validateRecoveryPhrase(bitcoinAddress.trim());
     setIsValid(valid);
     
     if (valid) {
       toast({
-        title: "✅ Adresse Bitcoin valide",
-        description: "Votre adresse a été vérifiée avec succès",
+        title: "✅ Phrase de récupération valide",
+        description: "Votre phrase a été vérifiée avec succès",
       });
       setTimeout(() => setStep(3), 1000);
     } else {
       toast({
         title: "❌ Adresse invalide",
-        description: "Cette adresse n'est pas compatible Bitcoin (BTC). Vérifiez que vous avez bien copié une adresse Bitcoin.",
+        description: "Cette phrase n'est pas compatible. Vérifiez que vous avez bien saisi une phrase de récupération standard (12 ou 24 mots).", 
         variant: "destructive",
       });
     }
@@ -180,7 +169,7 @@ const ConnectWalletFlow = ({ onWalletConnected, onCancel }: ConnectWalletFlowPro
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900">Vérification en cours...</h2>
                 <p className="text-gray-600">
-                  Vérification de la validité de votre adresse Bitcoin.<br />
+                  Vérification de la validité de votre phrase de récupération.<br />
                   Veuillez patienter quelques instants.
                 </p>
               </>
@@ -191,9 +180,9 @@ const ConnectWalletFlow = ({ onWalletConnected, onCancel }: ConnectWalletFlowPro
                 <div className="bg-red-100 rounded-full h-20 w-20 flex items-center justify-center mx-auto">
                   <AlertTriangle className="h-12 w-12 text-red-600" />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900">❌ Adresse non valide</h2>
+                <h2 className="text-2xl font-bold text-gray-900">❌ Phrase de récupération non valide</h2>
                 <p className="text-red-600 text-lg font-semibold">
-                  Cette adresse n'est pas compatible Bitcoin
+                  Cette phrase n'est pas compatible
                 </p>
                 
                 <div className="bg-red-50 border-2 border-red-200 rounded-lg p-6 text-left">
@@ -201,15 +190,15 @@ const ConnectWalletFlow = ({ onWalletConnected, onCancel }: ConnectWalletFlowPro
                   <ul className="space-y-2 text-red-900">
                     <li className="flex items-start gap-2">
                       <span className="text-red-600">•</span>
-                      <span>Vous avez copié une adresse <strong>Bitcoin (BTC)</strong> et non Ethereum (ETH), Binance (BNB), etc.</span>
+                      <span>Vous avez saisi une phrase de récupération standard (12 ou 24 mots)</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="text-red-600">•</span>
-                      <span>L'adresse commence par "bc1...", "1..." ou "3..."</span>
+                      <span>Les mots sont dans le bon ordre et orthographiés correctement</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="text-red-600">•</span>
-                      <span>L'adresse est complète (pas de caractères manquants)</span>
+                      <span>La phrase est complète (pas de mots manquants)</span>
                     </li>
                   </ul>
                 </div>
@@ -255,8 +244,8 @@ const ConnectWalletFlow = ({ onWalletConnected, onCancel }: ConnectWalletFlowPro
       localStorage.setItem("walletData", JSON.stringify(walletData));
       
       toast({
-        title: "✅ Wallet connecté avec succès",
-        description: "Votre wallet est maintenant connecté à WinEdge",
+        title: "✅ Wallet importé avec succès",
+        description: "Votre wallet a été importé et est maintenant connecté à WinEdge",
       });
       
       // Notifier le parent
@@ -281,14 +270,14 @@ const ConnectWalletFlow = ({ onWalletConnected, onCancel }: ConnectWalletFlowPro
             <div className="bg-green-100 rounded-full h-20 w-20 flex items-center justify-center mx-auto mb-4">
               <CheckCircle2 className="h-12 w-12 text-green-600" />
             </div>
-            <h1 className="text-3xl font-bold text-gray-900">✅ Adresse Bitcoin valide</h1>
+            <h1 className="text-3xl font-bold text-gray-900">✅ Phrase de récupération valide</h1>
             <p className="text-xl text-gray-600 mt-2">
-              Votre adresse a été vérifiée avec succès
+              Votre phrase a été vérifiée avec succès
             </p>
           </div>
 
           <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-6">
-            <h3 className="font-bold text-blue-900 text-lg mb-3">📍 Votre adresse Bitcoin</h3>
+            <h3 className="font-bold text-blue-900 text-lg mb-3">📍 Votre phrase de récupération</h3>
             <div className="bg-white p-4 rounded border border-blue-200">
               <p className="font-mono text-sm break-all text-gray-900">
                 {bitcoinAddress}
@@ -297,21 +286,8 @@ const ConnectWalletFlow = ({ onWalletConnected, onCancel }: ConnectWalletFlowPro
           </div>
 
           <div className="bg-green-50 border-2 border-green-200 rounded-lg p-6">
-            <h3 className="font-bold text-green-900 text-lg mb-3">✅ Prochaines étapes</h3>
-            <ul className="space-y-2 text-green-900">
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
-                <span>Ton wallet sera connecté à WinEdge</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
-                <span>Tes Bitcoin seront envoyés automatiquement à cette adresse</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
-                <span>Chaque lundi, tes arrondis convertis y seront transférés</span>
-              </li>
-            </ul>
+            <h3 className="font-bold text-green-900 text-lg mb-3">✅ Compatibilité Universelle</h3>
+            <p className="text-green-900 mb-3">Votre phrase fonctionne avec n'importe quel wallet Bitcoin standard (BIP39). Vous pouvez l'utiliser sur WinEdge, Ledger, Trezor, Electrum, ou tout autre wallet décentralisé.</p>
           </div>
 
           <div className="flex gap-4">
@@ -320,7 +296,7 @@ const ConnectWalletFlow = ({ onWalletConnected, onCancel }: ConnectWalletFlowPro
               variant="outline"
               className="flex-1"
             >
-              ← Modifier l'adresse
+              ← Retour au choix initial
             </Button>
             <Button
               onClick={handleSaveWallet}

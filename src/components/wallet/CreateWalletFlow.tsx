@@ -26,70 +26,95 @@ const CreateWalletFlow = ({ onWalletCreated, onCancel }: CreateWalletFlowProps) 
         <div className="space-y-6">
           <div className="text-center">
             <Shield className="h-16 w-16 text-blue-600 mx-auto mb-4" />
-            <h1 className="text-3xl font-bold text-gray-900">Création de votre wallet sécurisé</h1>
-            <p className="text-gray-600 mt-2">Lisez attentivement les consignes de sécurité</p>
+            <h1 className="text-3xl font-bold text-gray-900">Wallet Décentralisé : Votre Souveraineté Financière</h1>
+            <p className="text-gray-600 mt-2">Wallet Décentralisé</p>
           </div>
 
           <div className="bg-red-50 border-2 border-red-200 rounded-lg p-6 space-y-4">
             <div className="flex items-start gap-3">
               <AlertTriangle className="h-6 w-6 text-red-600 flex-shrink-0 mt-1" />
               <div>
-                <h3 className="font-bold text-red-900 text-lg">⚠️ AVERTISSEMENT CRITIQUE</h3>
+                <h3 className="font-bold text-red-900 text-lg">Wallet Décentralisé</h3>
                 <p className="text-red-800 mt-2">
-                  Vous allez créer un wallet décentralisé. Cela signifie que :
                 </p>
               </div>
             </div>
-
+          
             <ul className="space-y-3 ml-9">
               <li className="flex items-start gap-2">
-                <span className="text-red-600 font-bold">•</span>
+                <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
                 <span className="text-red-900">
-                  <strong>VOUS seul détenez les clés</strong> de votre wallet
+                  <strong>Vous êtes votre propre banque</strong>
                 </span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-red-600 font-bold">•</span>
+                <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
                 <span className="text-red-900">
-                  <strong>WinEdge ne peut PAS récupérer</strong> votre accès si vous perdez votre phrase secrète
+                  <strong>Contrôle total et exclusif de vos fonds</strong>
                 </span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-red-600 font-bold">•</span>
+                <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
                 <span className="text-red-900">
-                  <strong>Personne ne peut vous aider</strong> si vous perdez cette phrase (même pas le support)
+                  <strong>Impossible à saisir ou bloquer</strong>
                 </span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-red-600 font-bold">•</span>
+                <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
                 <span className="text-red-900">
-                  <strong>Sans cette phrase, vos Bitcoin sont PERDUS À JAMAIS</strong>
+                  <strong>Aucun intermédiaire ne peut accéder à vos Bitcoin</strong>
+                </span>
+              </li>
+              <li className="flex items-start gap-2">
+                <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <span className="text-red-900">
+                  <strong>Liberté financière absolue</strong>
                 </span>
               </li>
             </ul>
           </div>
-
+          
           <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-6 space-y-3">
             <h3 className="font-bold text-blue-900 text-lg flex items-center gap-2">
               <Lock className="h-5 w-5" />
-              Règles de sécurité essentielles
+              Wallet Centralisé
             </h3>
             <ul className="space-y-2">
               <li className="flex items-start gap-2 text-blue-900">
-                <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
-                <span>Vous devrez noter votre phrase de récupération de <strong>12 mots</strong> sur papier</span>
+                <span className="text-red-600 font-bold">✗</span>
+                <span>Une entreprise contrôle vos fonds</span>
               </li>
               <li className="flex items-start gap-2 text-blue-900">
-                <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
-                <span>Conservez cette phrase dans un lieu <strong>sûr et hors ligne</strong></span>
+                <span className="text-red-600 font-bold">✗</span>
+                <span>Vos Bitcoin peuvent être bloqués</span>
               </li>
               <li className="flex items-start gap-2 text-blue-900">
-                <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
-                <span><strong>Ne la partagez JAMAIS</strong> avec qui que ce soit</span>
+                <span className="text-red-600 font-bold">✗</span>
+                <span>Saisissable par décision judiciaire</span>
               </li>
               <li className="flex items-start gap-2 text-blue-900">
-                <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
-                <span><strong>Ne la stockez JAMAIS</strong> numériquement (pas de photo, pas de fichier)</span>
+                <span className="text-red-600 font-bold">✗</span>
+                <span>Risque de faillite de la plateforme</span>
+              </li>
+              <li className="flex items-start gap-2 text-blue-900">
+                <span className="text-red-600 font-bold">✗</span>
+                <span>Dépendance totale à un tiers</span>
+              </li>
+            </ul>
+          </div>
+          <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-6 space-y-3">
+            <h3 className="font-bold text-blue-900 text-lg flex items-center gap-2">
+              <Lock className="h-5 w-5" />
+              La Garantie WinEdge
+            </h3>
+            <ul className="space-y-2">
+              <li className="flex items-start gap-2 text-blue-900">
+                <span className="text-blue-600 font-bold">•</span>
+                <span>WinEdge n'a AUCUN accès à vos Bitcoin. Nous ne pouvons ni voir votre solde, ni bloquer vos transactions, ni récupérer vos fonds.</span>
+              </li>
+              <li className="flex items-start gap-2 text-blue-900">
+                <span className="text-blue-600 font-bold">•</span>
+                <span>Vos clés privées sont générées et stockées uniquement sur votre appareil. Architecture zero-knowledge garantie.</span>
               </li>
             </ul>
           </div>
@@ -122,7 +147,7 @@ const CreateWalletFlow = ({ onWalletCreated, onCancel }: CreateWalletFlowProps) 
               disabled={!acceptedTerms}
               className="flex-1 bg-blue-600 hover:bg-blue-700"
             >
-              Générer mon wallet
+              Continuer
             </Button>
           </div>
         </div>
@@ -183,9 +208,9 @@ const CreateWalletFlow = ({ onWalletCreated, onCancel }: CreateWalletFlowProps) 
                 <div className="animate-spin rounded-full h-20 w-20 border-b-4 border-blue-600"></div>
               </div>
             </div>
-            <h2 className="text-2xl font-bold text-gray-900">Génération de votre wallet sécurisé...</h2>
+            <h2 className="text-2xl font-bold text-gray-900">Liberté Absolue = Responsabilité Absolue</h2>
             <p className="text-gray-600">
-              Création de vos clés cryptographiques de niveau militaire.<br />
+              Vous devez comprendre ces points avant de continuer<br />
               Veuillez patientez quelques instants.
             </p>
           </div>
@@ -206,25 +231,24 @@ const CreateWalletFlow = ({ onWalletCreated, onCancel }: CreateWalletFlowProps) 
               <div className="bg-red-100 rounded-full h-16 w-16 flex items-center justify-center mx-auto mb-4">
                 <AlertTriangle className="h-8 w-8 text-red-600" />
               </div>
-              <h1 className="text-3xl font-bold text-gray-900">⚠️ ÉTAPE CRITIQUE</h1>
+              <h1 className="text-3xl font-bold text-gray-900">ÉTAPE CRITIQUE - Sauvegardez Immédiatement</h1>
               <p className="text-xl text-red-600 font-semibold mt-2">
-                Sauvegardez votre phrase de récupération
+                Vous êtes sur le point de voir votre phrase de récupération. Préparez papier et stylo MAINTENANT.
               </p>
             </div>
 
             <div className="bg-red-50 border-2 border-red-300 rounded-lg p-6">
-              <h3 className="font-bold text-red-900 text-lg mb-3">🚨 CE QUE VOUS DEVEZ FAIRE ABSOLUMENT :</h3>
-              <ol className="space-y-2 list-decimal list-inside text-red-900">
-                <li><strong>ÉCRIVEZ</strong> ces 12 mots sur PAPIER (dans l'ordre exact)</li>
-                <li><strong>ÉCRIVEZ-les en DOUBLE</strong> (2 copies papier minimum)</li>
-                <li><strong>CONSERVEZ</strong> ces papiers dans des lieux DIFFÉRENTS et SÛRS :
-                  <ul className="list-disc list-inside ml-6 mt-1">
-                    <li>Coffre-fort personnel</li>
-                    <li>Coffre bancaire</li>
-                    <li>Chez un proche de confiance</li>
-                  </ul>
-                </li>
-              </ol>
+              <h3 className="font-bold text-red-900 text-lg mb-3">Votre Phrase de Récupération (12 mots)</h3>
+              <p className="text-red-900 mb-3">Votre phrase est masquée pour votre sécurité</p>
+              <div className="flex gap-4">
+                <Button className="w-full h-14 text-lg bg-blue-600 hover:bg-blue-700">
+                  Révéler ma phrase de récupération
+                </Button>
+                <Button className="w-full h-14 text-lg bg-gray-600 hover:bg-gray-700">
+                  Copier pour écriture temporaire (attention !)
+                </Button>
+              </div>
+              <p className="text-green-600 mt-2 text-center font-semibold">Copié !</p>
             </div>
 
             <div className="bg-amber-50 border-2 border-amber-300 rounded-lg p-6">
@@ -249,42 +273,46 @@ const CreateWalletFlow = ({ onWalletCreated, onCancel }: CreateWalletFlowProps) 
               </h3>
               <ul className="space-y-2">
                 <li className="flex items-center gap-2">
-                  <span className="text-red-500">❌</span>
-                  <span>JAMAIS de capture d'écran</span>
+                  <span className="text-red-500">✗</span>
+                  <span>JAMAIS de capture d'écran (synchronisée dans le cloud)</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-red-500">❌</span>
-                  <span>JAMAIS sur téléphone (ni dans Notes, ni dans Photos, ni dans Cloud)</span>
+                  <span className="text-red-500">✗</span>
+                  <span>JAMAIS de photo (sauvegardée automatiquement)</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-red-500">❌</span>
-                  <span>JAMAIS sur ordinateur (ni dans Word, ni dans fichier texte)</span>
+                  <span className="text-red-500">✗</span>
+                  <span>JAMAIS dans un fichier texte ou Word</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-red-500">❌</span>
+                  <span className="text-red-500">✗</span>
                   <span>JAMAIS par email ou messagerie</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-red-500">❌</span>
-                  <span>JAMAIS partager avec QUICONQUE (même pas WinEdge !)</span>
+                  <span className="text-red-500">✗</span>
+                  <span>JAMAIS partagée avec qui que ce soit (même WinEdge)</span>
                 </li>
               </ul>
             </div>
 
             <div className="bg-blue-50 border-2 border-blue-300 rounded-lg p-6">
-              <h3 className="font-bold text-blue-900 text-lg mb-2">💡 POURQUOI C'EST SI IMPORTANT ?</h3>
+              <h3 className="font-bold text-blue-900 text-lg mb-2">CE QUE VOUS DEVEZ FAIRE :</h3>
               <ul className="space-y-2 text-blue-900">
                 <li className="flex items-start gap-2">
                   <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
-                  <span>Si vous perdez l'accès à votre compte WinEdge, cette phrase est le SEUL moyen de récupérer vos Bitcoin</span>
+                  <span>ÉCRIRE ces 12 mots sur PAPIER dans l'ordre exact</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
-                  <span>Sans cette phrase, vos Bitcoin sont PERDUS À JAMAIS</span>
+                  <span>FAIRE au minimum 2 copies sur papier différent</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
-                  <span>Avec cette phrase, vous pouvez récupérer votre wallet sur n'importe quelle autre plateforme compatible</span>
+                  <span>CONSERVER ces papiers dans des lieux différents et sûrs</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <span>VÉRIFIER l'orthographe de chaque mot</span>
                 </li>
               </ul>
             </div>
@@ -293,7 +321,7 @@ const CreateWalletFlow = ({ onWalletCreated, onCancel }: CreateWalletFlowProps) 
               onClick={() => setStep(4)}
               className="w-full h-14 text-lg bg-blue-600 hover:bg-blue-700"
             >
-              J'ai sauvegardé ma phrase en sécurité → Vérifier
+              J'ai écrit ma phrase sur papier, continuer
             </Button>
           </div>
         </Card>
@@ -335,37 +363,57 @@ const CreateWalletFlow = ({ onWalletCreated, onCancel }: CreateWalletFlowProps) 
           <div className="space-y-6">
             <div className="text-center">
               <Check className="h-16 w-16 text-blue-600 mx-auto mb-4" />
-              <h1 className="text-3xl font-bold text-gray-900">Vérification de votre phrase</h1>
+              <h1 className="text-3xl font-bold text-gray-900">Vérification de Votre Phrase</h1>
               <p className="text-gray-600 mt-2">
-                Pour confirmer que vous avez bien noté votre phrase, entrez les mots demandés
+                Confirmez que vous avez correctement noté votre phrase de récupération
               </p>
             </div>
 
             <div className="space-y-4">
-              {requiredIndices.map((idx) => (
-                <div key={idx} className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">
-                    Mot n°{idx + 1}
-                  </label>
-                  <Input
-                    type="text"
-                    placeholder={`Entrez le mot n°${idx + 1}`}
-                    value={verificationWords[idx] || ''}
-                    onChange={(e) =>
-                      setVerificationWords({ ...verificationWords, [idx]: e.target.value })
-                    }
-                    className="h-12"
-                  />
-                </div>
-              ))}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">
+                  Mot n°3
+                </label>
+                <Input
+                  type="text"
+                  placeholder="Entrez le mot n°3"
+                  value={verificationWords[2] || ''}
+                  onChange={(e) =>
+                    setVerificationWords({ ...verificationWords, 2: e.target.value })
+                  }
+                  className="h-12"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">
+                  Mot n°7
+                </label>
+                <Input
+                  type="text"
+                  placeholder="Entrez le mot n°7"
+                  value={verificationWords[6] || ''}
+                  onChange={(e) =>
+                    setVerificationWords({ ...verificationWords, 6: e.target.value })
+                  }
+                  className="h-12"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">
+                  Mot n°11
+                </label>
+                <Input
+                  type="text"
+                  placeholder="Entrez le mot n°11"
+                  value={verificationWords[10] || ''}
+                  onChange={(e) =>
+                    setVerificationWords({ ...verificationWords, 10: e.target.value })
+                  }
+                  className="h-12"
+                />
+              </div>
             </div>
-
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-              <p className="text-sm text-amber-900">
-                <strong>💡 Conseil :</strong> Vérifiez l'orthographe et l'ordre exact des mots sur votre sauvegarde papier.
-              </p>
-            </div>
-
+            
             <div className="flex gap-4">
               <Button
                 onClick={() => setStep(3)}
@@ -377,7 +425,7 @@ const CreateWalletFlow = ({ onWalletCreated, onCancel }: CreateWalletFlowProps) 
               <Button
                 onClick={handleVerify}
                 className="flex-1 bg-blue-600 hover:bg-blue-700"
-                disabled={requiredIndices.some(idx => !verificationWords[idx]?.trim())}
+                disabled={!(verificationWords[2] && verificationWords[6] && verificationWords[10])}
               >
                 Vérifier
               </Button>
@@ -404,37 +452,61 @@ const CreateWalletFlow = ({ onWalletCreated, onCancel }: CreateWalletFlowProps) 
             </div>
 
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">🎉 Félicitations !</h1>
+              <h1 className="text-3xl font-bold text-gray-900">Dernières Confirmations</h1>
               <p className="text-xl text-gray-600 mt-2">
-                Votre wallet Bitcoin décentralisé est créé et sécurisé
+                Validez que vous comprenez votre responsabilité
               </p>
             </div>
 
             <div className="bg-green-50 border-2 border-green-200 rounded-lg p-6 text-left">
-              <h3 className="font-bold text-green-900 text-lg mb-3">✅ Ton wallet est opérationnel</h3>
-              <p className="text-green-900 mb-3">Tu peux maintenant :</p>
-              <ul className="space-y-2 text-green-900">
-                <li className="flex items-start gap-2">
-                  <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
-                  <span>Voir ton adresse de réception Bitcoin</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
-                  <span>Consulter ton solde en temps réel</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
-                  <span>Recevoir tes Bitcoin automatiquement chaque lundi</span>
-                </li>
-              </ul>
+              <div className="flex items-start space-x-3 p-4 bg-white rounded-lg">
+                <Checkbox
+                  id="terms"
+                  checked={acceptedTerms}
+                  onCheckedChange={(checked) => setAcceptedTerms(checked as boolean)}
+                  className="mt-1"
+                />
+                <label
+                  htmlFor="terms"
+                  className="text-sm text-gray-700 cursor-pointer leading-relaxed"
+                >
+                  <strong>J'ai compris et j'accepte les conditions suivantes :</strong>
+                  <ul className="mt-2 space-y-1">
+                    <li className="flex items-start gap-2">
+                      <Check className="h-4 w-4 text-green-600 flex-shrink-0 mt-0.5" />
+                      <span>J'ai sauvegardé ma phrase de récupération sur papier (minimum 2 copies)</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="h-4 w-4 text-green-600 flex-shrink-0 mt-0.5" />
+                      <span>Je comprends que WinEdge ne peut PAS récupérer mon accès si je perds ma phrase</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="h-4 w-4 text-green-600 flex-shrink-0 mt-0.5" />
+                      <span>Je comprends que quiconque possède ma phrase contrôle 100% de mes Bitcoin</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="h-4 w-4 text-green-600 flex-shrink-0 mt-0.5" />
+                      <span>Je ne partagerai JAMAIS ma phrase avec qui que ce soit</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="h-4 w-4 text-green-600 flex-shrink-0 mt-0.5" />
+                      <span>Je suis le seul responsable de la sécurité de mes fonds</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="h-4 w-4 text-green-600 flex-shrink-0 mt-0.5" />
+                      <span>Mes Bitcoin sont insaisissables et hors de portée de toute autorité</span>
+                    </li>
+                  </ul>
+                </label>
+              </div>
             </div>
 
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <p className="text-sm text-blue-900">
-                <strong>📍 Adresse de ton wallet :</strong>
+                <strong>Souveraineté Financière Activée :</strong>
               </p>
               <p className="font-mono text-xs sm:text-sm text-blue-900 mt-2 break-all bg-white p-3 rounded border border-blue-200">
-                {walletData?.address}
+                Vous êtes désormais votre propre banque. Vos Bitcoin sont protégés par cryptographie militaire et ne peuvent être ni bloqués, ni saisis, ni confisqués.
               </p>
             </div>
 
@@ -445,8 +517,9 @@ const CreateWalletFlow = ({ onWalletCreated, onCancel }: CreateWalletFlowProps) 
             <Button
               onClick={handleFinish}
               className="w-full h-14 text-lg bg-blue-600 hover:bg-blue-700"
+              disabled={!acceptedTerms}
             >
-              Accéder à mon wallet
+              Créer mon Wallet Décentralisé
             </Button>
           </div>
         </Card>
