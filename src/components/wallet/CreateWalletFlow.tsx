@@ -241,10 +241,10 @@ const CreateWalletFlow = ({ onWalletCreated, onCancel }: CreateWalletFlowProps) 
               <h3 className="font-bold text-red-900 text-lg mb-3">Votre Phrase de Récupération (12 mots)</h3>
               <p className="text-red-900 mb-3">Votre phrase est masquée pour votre sécurité</p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button className="w-full h-14 text-lg bg-blue-600 hover:bg-blue-700">
+                <Button className="w-full h-14 text-base sm:text-lg bg-blue-600 hover:bg-blue-700">
                   Révéler ma phrase de récupération
                 </Button>
-                <Button className="w-full h-14 text-lg bg-gray-600 hover:bg-gray-700">
+                <Button className="w-full h-14 text-base sm:text-lg bg-gray-600 hover:bg-gray-700">
                   Copier pour écriture temporaire (attention !)
                 </Button>
               </div>
