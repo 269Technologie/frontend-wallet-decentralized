@@ -17,6 +17,7 @@ const CreateWalletFlow = ({ onWalletCreated, onCancel }: CreateWalletFlowProps) 
   const [walletData, setWalletData] = useState<any>(null);
   const [verificationWords, setVerificationWords] = useState<{ [key: number]: string }>({});
   const [requiredIndices, setRequiredIndices] = useState<number[]>([]);
+  const [showMnemonic, setShowMnemonic] = useState(false);
   const { toast } = useToast();
 
   // Step 1: Security Instructions
@@ -241,30 +242,52 @@ const CreateWalletFlow = ({ onWalletCreated, onCancel }: CreateWalletFlowProps) 
               <h3 className="font-bold text-red-900 text-lg mb-3">Votre Phrase de Récupération (12 mots)</h3>
               <p className="text-red-900 mb-3">Votre phrase est masquée pour votre sécurité</p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button className="w-full h-14 text-base sm:text-lg bg-blue-600 hover:bg-blue-700">
-                  Révéler ma phrase de récupération
+                <Button 
+                  onClick={() => setShowMnemonic(!showMnemonic)}
+                  className="w-full h-14 text-xs sm:text-base md:text-lg bg-blue-600 hover:bg-blue-700"
+                >
+                  {showMnemonic ? 'Masquer ma phrase' : (
+                    <>
+                      <span className="hidden sm:block">Révéler ma phrase de récupération</span>
+                      <span className="block sm:hidden">Révéler ma phrase</span>
+                    </>
+                  )}
                 </Button>
-                <Button className="w-full h-14 text-sm sm:text-lg bg-gray-600 hover:bg-gray-700">
-                  Copier pour écriture temporaire (attention !)
+                <Button 
+                  onClick={() => {
+                    navigator.clipboard.writeText(walletData?.mnemonic || '');
+                    toast({
+                      title: 'Copié !',
+                      description: 'La phrase de récupération a été copiée dans le presse-papier.',
+                    });
+                  }}
+                  className="w-full h-14 text-xs sm:text-base md:text-lg bg-gray-600 hover:bg-gray-700"
+                >
+                  <span className="hidden sm:block">Copier pour écriture temporaire (attention !)</span>
+                  <span className="block sm:hidden">Copier phrase</span>
                 </Button>
               </div>
-              <p className="text-green-600 mt-2 text-center font-semibold">Copié !</p>
+              {showMnemonic && (
+                <p className="text-green-600 mt-2 text-center font-semibold">Phrase révélée !</p>
+              )}
             </div>
 
-            <div className="bg-amber-50 border-2 border-amber-300 rounded-lg p-6">
-              <h3 className="font-bold text-amber-900 text-lg mb-3">Votre phrase de récupération (12 mots)</h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                {words.map((word: string, idx: number) => (
-                  <div
-                    key={idx}
-                    className="px-4 py-3 rounded-lg bg-white border-2 border-amber-200 text-gray-900 font-mono text-sm"
-                  >
-                    <span className="text-gray-500 mr-2">{idx + 1}.</span>
-                    <span className="font-semibold">{word}</span>
-                  </div>
-                ))}
+            {showMnemonic && (
+              <div className="bg-amber-50 border-2 border-amber-300 rounded-lg p-6">
+                <h3 className="font-bold text-amber-900 text-lg mb-3">Votre phrase de récupération (12 mots)</h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                  {words.map((word: string, idx: number) => (
+                    <div
+                      key={idx}
+                      className="px-4 py-3 rounded-lg bg-white border-2 border-amber-200 text-gray-900 font-mono text-sm"
+                    >
+                      <span className="text-gray-500 mr-2">{idx + 1}.</span>
+                      <span className="font-semibold">{word}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             <div className="bg-gray-900 text-white rounded-lg p-6 space-y-3">
               <h3 className="font-bold text-lg flex items-center gap-2">
