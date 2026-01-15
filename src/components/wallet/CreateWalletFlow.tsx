@@ -244,7 +244,7 @@ const CreateWalletFlow = ({ onWalletCreated, onCancel }: CreateWalletFlowProps) 
                 <Button className="w-full h-14 text-base sm:text-lg bg-blue-600 hover:bg-blue-700">
                   Révéler ma phrase de récupération
                 </Button>
-                <Button className="w-full h-14 text-base sm:text-lg bg-gray-600 hover:bg-gray-700">
+                <Button className="w-full h-14 text-sm sm:text-lg bg-gray-600 hover:bg-gray-700">
                   Copier pour écriture temporaire (attention !)
                 </Button>
               </div>
