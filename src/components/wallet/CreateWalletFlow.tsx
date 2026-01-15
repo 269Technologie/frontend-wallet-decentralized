@@ -244,14 +244,10 @@ const CreateWalletFlow = ({ onWalletCreated, onCancel }: CreateWalletFlowProps) 
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button 
                   onClick={() => setShowMnemonic(!showMnemonic)}
-                  className="w-full h-14 text-xs sm:text-base md:text-lg bg-blue-600 hover:bg-blue-700"
+                  className="w-full h-14 text-sm sm:text-base bg-blue-600 hover:bg-blue-700"
                 >
-                  {showMnemonic ? 'Masquer ma phrase' : (
-                    <>
-                      <span className="hidden sm:block">Révéler ma phrase de récupération</span>
-                      <span className="block sm:hidden">Révéler ma phrase</span>
-                    </>
-                  )}
+                  Révéler ma phrase de 
+                  récupération
                 </Button>
                 <Button 
                   onClick={() => {
@@ -261,10 +257,10 @@ const CreateWalletFlow = ({ onWalletCreated, onCancel }: CreateWalletFlowProps) 
                       description: 'La phrase de récupération a été copiée dans le presse-papier.',
                     });
                   }}
-                  className="w-full h-14 text-xs sm:text-base md:text-lg bg-gray-600 hover:bg-gray-700"
+                  className="w-full h-14 text-sm sm:text-base bg-gray-600 hover:bg-gray-700"
                 >
-                  <span className="hidden sm:block">Copier pour écriture temporaire (attention !)</span>
-                  <span className="block sm:hidden">Copier phrase</span>
+                  Copier pour écriture 
+                  temporaire (attention !)
                 </Button>
               </div>
               {showMnemonic && (
@@ -342,9 +338,10 @@ const CreateWalletFlow = ({ onWalletCreated, onCancel }: CreateWalletFlowProps) 
 
             <Button
               onClick={() => setStep(4)}
-              className="w-full h-14 text-lg bg-blue-600 hover:bg-blue-700"
+              className="w-full h-14 text-base sm:text-lg bg-blue-600 hover:bg-blue-700"
             >
-              J'ai écrit ma phrase sur papier, continuer
+              J'ai écrit ma phrase sur 
+              papier, continuer
             </Button>
           </div>
         </Card>
