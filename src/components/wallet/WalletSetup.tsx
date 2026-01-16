@@ -9,6 +9,7 @@ import {
 import CreateWalletFlow from "./CreateWalletFlow";
 import ConnectWalletFlow from "./ConnectWalletFlow";
 import StickyMenu from "./StickyMenu";
+import BitcoinAddressInput from "./BitcoinAddressInput";
 
 const WalletSetup = ({ onWalletCreated }: { onWalletCreated: (walletData: any) => void }) => {
   const [currentView, setCurrentView] = useState<"menu" | "create" | "connect">("menu");
@@ -16,7 +17,7 @@ const WalletSetup = ({ onWalletCreated }: { onWalletCreated: (walletData: any) =
   // --- LOGIQUE DE NAVIGATION ---
   if (currentView === "create") {
     return (
-      <CreateWalletFlow 
+      <CreateWalletFlow
         onWalletCreated={onWalletCreated}
         onCancel={() => setCurrentView("menu")}
       />
@@ -25,7 +26,7 @@ const WalletSetup = ({ onWalletCreated }: { onWalletCreated: (walletData: any) =
 
   if (currentView === "connect") {
     return (
-      <ConnectWalletFlow 
+      <ConnectWalletFlow
         onWalletConnected={onWalletCreated}
         onCancel={() => setCurrentView("menu")}
       />
@@ -63,16 +64,21 @@ const WalletSetup = ({ onWalletCreated }: { onWalletCreated: (walletData: any) =
           </button>
 
           {/* Carte Connexion (Blanche) */}
-          <button
-            onClick={() => setCurrentView("connect")}
-            className="w-full bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-900 rounded-2xl p-6 flex justify-between items-center transition-all group"
-          >
-            <div className="text-left">
-              <h3 className="text-xl font-semibold">Connecter une adresse Bitcoin existante</h3>
-              <p className="text-slate-500 text-sm mt-1">Vous avez déjà un wallet Bitcoin</p>
-            </div>
-            <Zap className="h-7 w-7 text-slate-400 group-hover:scale-110 transition-transform" />
-          </button>
+          {/* Carte Connexion (Blanche) - AVEC MODAL INTÉGRÉE */}
+          <BitcoinAddressInput
+            onSuccess={(address, network) => {
+              // Crée la structure walletData attendue par le parent
+              const walletData = {
+                address: address,
+                balance: "0.00000000",
+                isConnected: true,
+                connectedAt: new Date().toISOString(),
+                network: network, // Ajout du réseau détecté
+                isReadOnly: true // Indicateur que c'est une adresse importée
+              };
+              onWalletCreated(walletData);
+            }}
+          />
         </div>
 
         {/* Bloc d'avertissement jaune */}
@@ -81,7 +87,7 @@ const WalletSetup = ({ onWalletCreated }: { onWalletCreated: (walletData: any) =
           <div className="space-y-1">
             <h4 className="font-bold text-[#92400E]">Important à savoir</h4>
             <p className="text-[#B45309] text-sm leading-relaxed">
-              WinEdge ne stocke <span className="font-bold underline">JAMAIS</span> vos clés privées. 
+              WinEdge ne stocke <span className="font-bold underline">JAMAIS</span> vos clés privées.
               Vous êtes le seul propriétaire de vos Bitcoin.
             </p>
           </div>
@@ -92,7 +98,7 @@ const WalletSetup = ({ onWalletCreated }: { onWalletCreated: (walletData: any) =
           <h2 className="text-3xl font-bold text-gray-900 mb-8">
             FAQ – Wallet Décentralisé WinEdge
           </h2>
-          
+
           <Accordion type="single" collapsible className="w-full space-y-3">
             <AccordionItem value="item-1" className="border rounded-xl px-4 bg-white shadow-sm">
               <AccordionTrigger className="text-left hover:no-underline py-5">
