@@ -116,7 +116,7 @@ const WalletSetup = ({ onWalletCreated }: { onWalletCreated: (walletData: any) =
               <AccordionContent className="text-gray-600 space-y-3 pt-2 pb-5 text-sm leading-relaxed">
                 <p>Parce que la sécurité dépend uniquement de la clé privée, jamais d'un serveur centralisé.</p>
                 <p className="font-medium">✔ Sécurité niveau militaire</p>
-                <p>Votre portefeuille repose sur une phrase secrète de 12 mots (seed).</p>
+                <p>Votre Wallet repose sur une phrase secrète de 12 mots (seed).</p>
                 <p>Même en cas de panne serveur ou de faillite d'une société, vos cryptos restent intactes.</p>
                 <p className="font-bold">👉 Résultat : 100 % sécurisé, 0 % risque de confiscation.</p>
               </AccordionContent>
