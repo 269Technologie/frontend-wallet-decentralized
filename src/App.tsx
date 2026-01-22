@@ -1,4 +1,5 @@
 import { Toaster } from "@/components/ui/toaster";
+import { useSearchParams } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -13,6 +14,8 @@ import StickyMenu from "./components/wallet/StickyMenu";
 const queryClient = new QueryClient();
 
 const App = () => {
+  const [searchParams] = useSearchParams();
+
   const [walletData, setWalletData] = useState<{
     address: string;
     balance?: string;
@@ -27,51 +30,66 @@ const App = () => {
     }
   }, []);
 
+  const redirectToSignupApp = () => {
+    const isSignup = localStorage.getItem("signup") != null ? true : false;
+
+    if (isSignup) {
+      localStorage.removeItem("signup");
+      setTimeout(() => {
+        window.location.href = 'https://app.winedge.io/inscription-done?wallet_done=true';
+      }, 1500);
+    }
+  }
+
   const handleWalletCreated = (data: {
     address: string;
     balance?: string;
     mnemonic?: string;
   }) => {
     setWalletData(data);
+
+    // If from winedge signup, redirect back there
+    redirectToSignupApp()
   };
 
   return (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <StickyMenu />
-        <Routes>
-          <Route 
-            path="/" 
-            element={
-              walletData ? 
-                <Navigate to="/dashboard" /> : 
-                <Index onWalletCreated={setWalletData} />
-            } 
-          />
-          <Route 
-            path="/login" 
-            element={
-              walletData ? 
-                <Navigate to="/dashboard" /> : 
-                <Login />
-            } 
-          />
-          <Route 
-            path="/dashboard" 
-            element={
-              walletData ? 
-                <Dashboard walletData={walletData} /> : 
-                <Navigate to="/" />
-            } 
-          />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <StickyMenu />
+          <Routes>
+            <Route
+              path="/"
+              element={
+                walletData ?
+                  <Navigate to="/dashboard" /> :
+                  // <Index onWalletCreated={setWalletData} />
+                  <Index onWalletCreated={handleWalletCreated} />
+              }
+            />
+            <Route
+              path="/login"
+              element={
+                walletData ?
+                  <Navigate to="/dashboard" /> :
+                  <Login />
+              }
+            />
+            <Route
+              path="/dashboard"
+              element={
+                walletData ?
+                  <Dashboard walletData={walletData} /> :
+                  <Navigate to="/" />
+              }
+            />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
   );
 };
 

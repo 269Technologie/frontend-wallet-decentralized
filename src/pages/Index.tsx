@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import WalletHeader from "@/components/wallet/WalletHeader";
 import WalletSetup from "@/components/wallet/WalletSetup";
 import TwoFactorAuth from "@/components/wallet/TwoFactorAuth";
@@ -24,6 +24,7 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
   } | null>(null);
   const [twoFASecret, setTwoFASecret] = useState<string>("");
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [showWelcome2FA, setShowWelcome2FA] = useState(false);
   const { toast } = useToast();
   const [copiedMnemonic, setCopiedMnemonic] = useState(false);
@@ -145,22 +146,37 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
     }
   };
 
+
+  useEffect(() => {
+    const signup = searchParams.get("signup");
+    // console.log("Inside signup function from useEffect ", signup)
+    if (signup === "true") {
+
+      localStorage.setItem("signup", "true");
+    }
+    // redirectToSignupApp()
+
+  }, [searchParams]);
+
+
   // If no wallet, show setup
   if (!walletData) {
     return <WalletSetup onWalletCreated={handleWalletCreated} />;
   }
 
+
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
-  {/* Welcome 2FA dialog removed as requested */}
+        {/* Welcome 2FA dialog removed as requested */}
         <div className="space-y-6">
-                    <WalletHeader 
-            address={walletData.address} 
+          <WalletHeader
+            address={walletData.address}
             privateKey={walletData.privateKey}
             twoFASecret={twoFASecret}
           />
-          
+
           <div className="space-y-4">
             {/* <TwoFactorAuth 
               userId={walletData.address} 

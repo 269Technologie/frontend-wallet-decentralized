@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Key, Zap, AlertTriangle, Bitcoin } from "lucide-react";
 import {
   Accordion,
@@ -13,6 +13,11 @@ import BitcoinAddressInput from "./BitcoinAddressInput";
 
 const WalletSetup = ({ onWalletCreated }: { onWalletCreated: (walletData: any) => void }) => {
   const [currentView, setCurrentView] = useState<"menu" | "create" | "connect">("menu");
+
+  // useEffect(() => {
+  //   const isSignup = localStorage.getItem("signup")
+
+  // }, []);
 
   // --- LOGIQUE DE NAVIGATION ---
   if (currentView === "create") {

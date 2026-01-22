@@ -15,7 +15,15 @@ const StickyMenu = () => {
   };
 
   const handleBackToDashboard = () => {
-    window.location.href = "https://app.winedge.io/mon-compte?tab=settings";
+    const isSignup = localStorage.getItem("signup") != null ? true : false
+    if (isSignup) {
+      localStorage.removeItem("signup");
+      window.location.href = "https://app.winedge.io/inscription-done?wallet_done=false";
+      // window.location.href = "http://localhost:5173/inscription-done?wallet_done=false";
+    } else {
+      window.location.href = "https://app.winedge.io/mon-compte?tab=settings";
+    }
+    // window.location.href = "https://app.winedge.io/mon-compte?tab=settings";
   };
 
   const handleHome = () => {
@@ -35,7 +43,7 @@ const StickyMenu = () => {
 
           {/* Navigation Buttons */}
           <div className="flex items-center gap-2">
-{/* 
+            {/* 
             <Button
               onClick={handleCreateWallet}
               size="sm"
