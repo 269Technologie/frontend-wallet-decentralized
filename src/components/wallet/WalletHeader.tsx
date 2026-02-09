@@ -14,12 +14,11 @@ import { useToast } from "@/hooks/use-toast";
 
 interface WalletHeaderProps {
   address: string;
-  network?: "btc" | "bsc";
   privateKey?: string;
   twoFASecret?: string;
 }
 
-const WalletHeader = ({ address, network = "btc", privateKey, twoFASecret }: WalletHeaderProps) => {
+const WalletHeader = ({ address, privateKey, twoFASecret }: WalletHeaderProps) => {
   const [balance, setBalance] = useState("0.00000000");
   const [usdValue, setUsdValue] = useState("$0.00");
   const { toast } = useToast();
@@ -27,38 +26,11 @@ const WalletHeader = ({ address, network = "btc", privateKey, twoFASecret }: Wal
   useEffect(() => {
     const fetchBalance = async () => {
       try {
-        if (network === "btc") {
-          // Use mempool.space for Bitcoin balance
-          const response = await fetch(`https://mempool.space/api/address/${address}`);
-          if (response.ok) {
-            const data = await response.json();
-            const stats = data.chain_stats;
-            const satBalance = stats.funded_txo_sum - stats.spent_txo_sum;
-            const btcBalance = satBalance / 100000000;
-            setBalance(btcBalance.toFixed(8));
-            setUsdValue(`$${(btcBalance * 43720).toFixed(2)}`); // Assuming BTC price
-          }
-        } else if (network === "bsc") {
-          // Use Binance Public RPC for BSC balance
-          const response = await fetch("https://bsc-dataseed.binance.org/", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              jsonrpc: "2.0",
-              id: 1,
-              method: "eth_getBalance",
-              params: [address, "latest"]
-            })
-          });
-          if (response.ok) {
-            const data = await response.json();
-            if (data.result) {
-              const wei = BigInt(data.result);
-              const bnbBalance = Number(wei) / 1e18;
-              setBalance(bnbBalance.toFixed(18).slice(0, 10)); // Show manageable decimals
-              setUsdValue(`$${(bnbBalance * 300).toFixed(2)}`); // Assuming BNB price
-            }
-          }
+        const response = await fetch(`https://api.winedge.io/v2/balance/${address}`);
+        if (response.ok) {
+          const data = await response.json();
+          setBalance((data.balance / 100000000).toFixed(8)); // Convert from satoshis to BTC
+          setUsdValue(`$${(data.balance / 100000000 * 43720).toFixed(2)}`); // Assuming BTC price
         }
       } catch (error) {
         console.error("Erreur lors de la récupération du solde:", error);
@@ -66,7 +38,7 @@ const WalletHeader = ({ address, network = "btc", privateKey, twoFASecret }: Wal
     };
 
     if (address) fetchBalance();
-  }, [address, network]);
+  }, [address]);
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(address);
@@ -123,7 +95,7 @@ const WalletHeader = ({ address, network = "btc", privateKey, twoFASecret }: Wal
 
       <div className="text-center">
         <div className="text-4xl font-bold text-primary mb-2">
-          {balance} {network === "btc" ? "BTC" : "BNB/WIT"}
+          {balance} BTC
         </div>
         <div className="text-lg text-muted-foreground mb-6">
           ≈ {usdValue} USD

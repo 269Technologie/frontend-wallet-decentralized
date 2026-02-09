@@ -25,21 +25,17 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
     network: "btc" | "bsc";
     mnemonic?: string;
     privateKey?: string;
-  }[]>([]);
+  } | null>(null);
 
   useEffect(() => {
     const stored = localStorage.getItem("walletData");
     if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        setWalletData(Array.isArray(parsed) ? parsed : [parsed]);
-      } catch (e) {
-        setWalletData([]);
-      }
+      const parsed = JSON.parse(stored);
+      setWalletData(parsed);
     }
   }, []);
 
-  const activeWallet = walletData.length > 0 ? walletData[walletData.length - 1] : null;
+  const activeWallet = walletData;
 
   const [twoFASecret, setTwoFASecret] = useState<string>("");
   const navigate = useNavigate();
@@ -68,26 +64,15 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
     mnemonic?: string;
     privateKey?: string;
   }) => {
-    // 1. Récupérer les wallets existants
+    // 1. Récupérer le wallets existants
     const stored = localStorage.getItem("walletData");
-    let wallets = [];
     if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        wallets = Array.isArray(parsed) ? parsed : [parsed];
-      } catch (e) {
-        wallets = [];
-      }
+      wallet = JSON.parse(stored);
     }
-
     // 2. Ajouter le nouveau wallet si il n'existe pas déjà
-    const exists = wallets.some(w => w.address === wallet.address && w.network === wallet.network);
-    if (!exists) {
-      wallets.push(wallet);
-      localStorage.setItem("walletData", JSON.stringify(wallets));
-    }
+    localStorage.setItem("walletData", JSON.stringify(wallet));
 
-    setWalletData(wallets);
+    setWalletData(wallet);
     parentOnWalletCreated(wallet);
   };
 
@@ -207,7 +192,7 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
 
 
   // If no wallet, show setup
-  if (walletData.length === 0) {
+  if (!walletData) {
     return <WalletSetup onWalletCreated={handleWalletCreated} />;
   }
 
@@ -220,7 +205,7 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
         <div className="space-y-6">
           <WalletHeader
             address={activeWallet?.address || ''}
-            network={activeWallet?.network}
+            // network={activeWallet?.network}
             privateKey={activeWallet?.privateKey}
             twoFASecret={twoFASecret}
           />

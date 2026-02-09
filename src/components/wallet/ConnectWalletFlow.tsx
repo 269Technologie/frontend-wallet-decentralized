@@ -232,44 +232,24 @@ const ConnectWalletFlow = ({ onWalletConnected, onCancel }: ConnectWalletFlowPro
     setValidating(true);
 
     try {
-      // 1. Récupérer les wallets existants
-      const stored = localStorage.getItem("walletData");
-      let wallets = [];
-      if (stored) {
-        try {
-          const parsed = JSON.parse(stored);
-          wallets = Array.isArray(parsed) ? parsed : [parsed];
-        } catch (e) {
-          wallets = [];
-        }
-      }
-
-      // 2. Créer le nouvel objet wallet
-      // Note: On utilise bitcoinAddress comme mnemonic ici car le champ contient la phrase
-      const newWallet = {
-        address: "Mnemonic Import", // Idéalement à dériver avec bitcoinjs
-        mnemonic: bitcoinAddress.trim(),
+      // Créer un objet wallet pour la connexion
+      const walletData = {
+        address: bitcoinAddress.trim(),
         balance: "0.00000000",
         isConnected: true,
-        connectedAt: new Date().toISOString(),
-        network: "btc" as const,
-        isReadOnly: false
+        connectedAt: new Date().toISOString()
       };
 
-      // 3. Ajouter si n'existe pas déjà (basé sur le mnemonic)
-      const exists = wallets.some(w => w.mnemonic === newWallet.mnemonic);
-      if (!exists) {
-        wallets.push(newWallet);
-        localStorage.setItem("walletData", JSON.stringify(wallets));
-      }
+      // Sauvegarder dans le localStorage
+      localStorage.setItem("walletData", JSON.stringify(walletData));
 
       toast({
         title: "✅ Wallet importé avec succès",
         description: "Votre wallet a été importé et est maintenant connecté à WinEdge",
       });
 
-      // Notifier le parent avec le dernier état (le nouveau wallet)
-      onWalletConnected(newWallet);
+      // Notifier le parent
+      onWalletConnected(walletData);
     } catch (error) {
       console.error("Erreur lors de la sauvegarde:", error);
       toast({

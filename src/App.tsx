@@ -25,24 +25,19 @@ const App = () => {
     network: "btc" | "bsc";
     mnemonic?: string;
     privateKey?: string;
-  }[]>([]);
+  } | null>(null);
 
   useEffect(() => {
     // Vérifie si un wallet est déjà stocké
     const stored = localStorage.getItem("walletData");
     if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        const wallets = Array.isArray(parsed) ? parsed : [parsed];
-        setWalletData(wallets);
-      } catch (e) {
-        console.error("Erreur lors du chargement des wallets:", e);
-      }
+      const parsed = JSON.parse(stored);
+      setWalletData(parsed);
     }
   }, []);
 
   const redirectToSignupApp = () => {
-    const isSignup = localStorage.getItem("signup") != "" ? true : false;
+    const isSignup = localStorage.getItem("signup") != null ? true : false;
 
     if (isSignup) {
       localStorage.removeItem("signup");
@@ -62,11 +57,7 @@ const App = () => {
     mnemonic?: string;
     privateKey?: string;
   }) => {
-    setWalletData(prev => {
-      const exists = prev.some(w => w.address === data.address && w.network === data.network);
-      if (exists) return prev;
-      return [...prev, data];
-    });
+    setWalletData(data);
 
     // If from winedge signup, redirect back there
     redirectToSignupApp()
@@ -83,7 +74,7 @@ const App = () => {
             <Route
               path="/"
               element={
-                walletData.length > 0 ?
+                walletData ?
                   <Navigate to="/dashboard" /> :
                   // <Index onWalletCreated={setWalletData} />
                   <Index onWalletCreated={handleWalletCreated} />
@@ -92,7 +83,7 @@ const App = () => {
             <Route
               path="/login"
               element={
-                walletData.length > 0 ?
+                walletData ?
                   <Navigate to="/dashboard" /> :
                   <Login />
               }
@@ -100,8 +91,8 @@ const App = () => {
             <Route
               path="/dashboard"
               element={
-                walletData.length > 0 ?
-                  <Dashboard walletData={walletData[walletData.length - 1]} /> :
+                walletData ?
+                  <Dashboard walletData={walletData} /> :
                   <Navigate to="/" />
               }
             />
