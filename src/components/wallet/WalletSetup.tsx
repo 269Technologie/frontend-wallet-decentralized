@@ -1,11 +1,19 @@
 import { useState, useEffect } from "react";
-import { Key, Zap, AlertTriangle, Bitcoin } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Key, Zap, AlertTriangle, Bitcoin, LogIn } from "lucide-react";
 import CreateWalletFlow from "./CreateWalletFlow";
 import ConnectWalletFlow from "./ConnectWalletFlow";
 import StickyMenu from "./StickyMenu";
@@ -13,6 +21,18 @@ import BitcoinAddressInput from "./BitcoinAddressInput";
 
 const WalletSetup = ({ onWalletCreated }: { onWalletCreated: (walletData: any) => void }) => {
   const [currentView, setCurrentView] = useState<"menu" | "create" | "connect">("menu");
+  const [isFetching, setIsFetching] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+
+  useEffect(() => {
+    setShowLoginModal(false);
+    const uid = localStorage.getItem("uid");
+    if (!uid) {
+      setShowLoginModal(true);
+    } else {
+      setShowLoginModal(false);
+    }
+  }, []);
 
   // useEffect(() => {
   //   const isSignup = localStorage.getItem("signup")
@@ -71,19 +91,74 @@ const WalletSetup = ({ onWalletCreated }: { onWalletCreated: (walletData: any) =
           {/* Carte Connexion (Blanche) */}
           {/* Carte Connexion (Blanche) - AVEC MODAL INTÉGRÉE */}
           <BitcoinAddressInput
-            onSuccess={(address, network) => {
-              // Crée la structure walletData attendue par le parent
+            onSuccess={async (address, network) => {
+              setIsFetching(true);
+              let balance = "0.00000000";
+
+              try {
+                if (network === "btc") {
+                  // Use mempool.space for Bitcoin balance
+                  const response = await fetch(`https://mempool.space/api/address/${address}`);
+                  // const response = await fetch(`https://mempool.space/api/address/34xp4vRoCGJym3xR7yCVPFHoCNxv4Twseo`);
+                  if (response.ok) {
+                    const data = await response.json();
+                    console.log("Data inside BTC response : ", data)
+                    const stats = data.chain_stats;
+                    // Balance = (funded - spent) in satoshis
+                    const satBalance = stats.funded_txo_sum - stats.spent_txo_sum;
+                    balance = (satBalance / 100000000).toFixed(8);
+                    console.log("Balance inside BTC response : ", balance)
+                  }
+                } else if (network === "bsc") {
+                  // Use Binance Public RPC for BSC balance
+                  const response = await fetch("https://bsc-dataseed.binance.org/", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      jsonrpc: "2.0",
+                      id: 1,
+                      method: "eth_getBalance",
+                      params: [address, "latest"]
+                      // params: ["0x10ED43C718714eb63d5aA57B78B54704E256024E", "latest"]
+                    })
+                  });
+                  if (response.ok) {
+                    const data = await response.json();
+                    console.log("Data inside BSC response : ", data)
+                    if (data.result) {
+                      // Result is in Wei (hex), convert to Eth/BNB equivalent (18 decimals)
+                      const wei = BigInt(data.result);
+                      const eth = Number(wei) / 1e18;
+                      balance = eth.toFixed(8);
+                      console.log("Balance inside BSC response : ", balance)
+                    }
+                  }
+                }
+              } catch (error) {
+                console.error("Erreur lors de la récupération du solde initial:", error);
+              }
+
               const walletData = {
                 address: address,
-                balance: "0.00000000",
+                balance: balance,
                 isConnected: true,
                 connectedAt: new Date().toISOString(),
-                network: network, // Ajout du réseau détecté
-                isReadOnly: true // Indicateur que c'est une adresse importée
+                network: network,
+                isReadOnly: true
               };
+
+              console.log("Data insinde wallet data *******", walletData);
+
               onWalletCreated(walletData);
+              setIsFetching(false);
             }}
           />
+
+          {isFetching && (
+            <div className="flex justify-center items-center py-2 animate-pulse">
+              <span className="text-sm text-blue-600 font-medium italic">Récupération du solde en cours...</span>
+            </div>
+          )}
         </div>
 
         {/* Bloc d'avertissement jaune */}
@@ -197,6 +272,31 @@ const WalletSetup = ({ onWalletCreated }: { onWalletCreated: (walletData: any) =
           </Accordion>
         </div>
       </div>
+
+      <Dialog open={showLoginModal} onOpenChange={() => { }}>
+        <DialogContent className="sm:max-w-md [&>button]:hidden" onPointerDownOutside={(e) => e.preventDefault()}>
+          <DialogHeader className="flex flex-col items-center gap-4 text-center">
+            <div className="bg-blue-100 p-3 rounded-full">
+              <LogIn className="h-6 w-6 text-blue-600" />
+            </div>
+            <DialogTitle className="text-2xl font-bold">Connexion Requise</DialogTitle>
+            <DialogDescription className="text-gray-600">
+              Pour sécuriser votre accès et lier votre wallet à votre compte WinEdge, vous devez d'abord vous connecter à l'application.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-3 mt-4">
+            <Button
+              className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-lg rounded-xl"
+              onClick={() => window.location.href = "https://app.winedge.io/login"}
+            >
+              Aller à la page de connexion
+            </Button>
+            <p className="text-xs text-center text-gray-400 mt-2">
+              Une fois connecté, revenez sur cette page pour configurer votre wallet.
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

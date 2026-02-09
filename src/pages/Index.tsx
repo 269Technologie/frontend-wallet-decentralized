@@ -19,9 +19,28 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
   const [walletData, setWalletData] = useState<{
     address: string;
     balance?: string;
+    isConnected: boolean;
+    connectedAt: string;
+    isReadOnly: boolean;
+    network: "btc" | "bsc";
     mnemonic?: string;
     privateKey?: string;
-  } | null>(null);
+  }[]>([]);
+
+  useEffect(() => {
+    const stored = localStorage.getItem("walletData");
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        setWalletData(Array.isArray(parsed) ? parsed : [parsed]);
+      } catch (e) {
+        setWalletData([]);
+      }
+    }
+  }, []);
+
+  const activeWallet = walletData.length > 0 ? walletData[walletData.length - 1] : null;
+
   const [twoFASecret, setTwoFASecret] = useState<string>("");
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -35,18 +54,40 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
   const [exportWifResult, setExportWifResult] = useState<string | null>(null);
   const [showDerivationModal, setShowDerivationModal] = useState(false);
   const [localMnemonicInput, setLocalMnemonicInput] = useState('');
-  const [localTargetAddress, setLocalTargetAddress] = useState(walletData?.address || '');
+  const [localTargetAddress, setLocalTargetAddress] = useState(activeWallet?.address || '');
   const [localDetecting, setLocalDetecting] = useState(false);
   const [localDetectResult, setLocalDetectResult] = useState<any>(null);
 
   const handleWalletCreated = (wallet: {
     address: string;
     balance?: string;
+    isConnected: boolean;
+    connectedAt: string;
+    isReadOnly: boolean;
+    network: "btc" | "bsc";
     mnemonic?: string;
     privateKey?: string;
   }) => {
-    setWalletData(wallet);
-    localStorage.setItem("walletData", JSON.stringify(wallet));
+    // 1. Récupérer les wallets existants
+    const stored = localStorage.getItem("walletData");
+    let wallets = [];
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        wallets = Array.isArray(parsed) ? parsed : [parsed];
+      } catch (e) {
+        wallets = [];
+      }
+    }
+
+    // 2. Ajouter le nouveau wallet si il n'existe pas déjà
+    const exists = wallets.some(w => w.address === wallet.address && w.network === wallet.network);
+    if (!exists) {
+      wallets.push(wallet);
+      localStorage.setItem("walletData", JSON.stringify(wallets));
+    }
+
+    setWalletData(wallets);
     parentOnWalletCreated(wallet);
   };
 
@@ -55,8 +96,8 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
   };
 
   const handleCopyMnemonic = () => {
-    if (!walletData?.mnemonic) return;
-    navigator.clipboard.writeText(walletData.mnemonic);
+    if (!activeWallet?.mnemonic) return;
+    navigator.clipboard.writeText(activeWallet.mnemonic);
     toast({
       title: "Copié",
       description: "Phrase de récupération copiée dans le presse-papiers.",
@@ -66,8 +107,8 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
   };
 
   const handleDownloadMnemonic = () => {
-    if (!walletData?.mnemonic) return;
-    const blob = new Blob([walletData.mnemonic], { type: "text/plain;charset=utf-8" });
+    if (!activeWallet?.mnemonic) return;
+    const blob = new Blob([activeWallet.mnemonic], { type: "text/plain;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -79,13 +120,13 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
   };
 
   const callDetectDerivation = async () => {
-    if (!walletData?.mnemonic || !walletData?.address) return;
+    if (!activeWallet?.mnemonic || !activeWallet?.address) return;
     setDetecting(true);
     try {
       const res = await fetch('/v2/wallet/detect', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mnemonic: walletData.mnemonic, address: walletData.address }),
+        body: JSON.stringify({ mnemonic: activeWallet.mnemonic, address: activeWallet.address }),
       });
       if (res.ok) {
         const data = await res.json();
@@ -149,18 +190,24 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
 
   useEffect(() => {
     const signup = searchParams.get("signup");
+    const uid = searchParams.get("uid");
     // console.log("Inside signup function from useEffect ", signup)
     if (signup === "true") {
 
       localStorage.setItem("signup", "true");
     }
+
+    if (uid) {
+      localStorage.setItem("uid", uid);
+    }
+
     // redirectToSignupApp()
 
   }, [searchParams]);
 
 
   // If no wallet, show setup
-  if (!walletData) {
+  if (walletData.length === 0) {
     return <WalletSetup onWalletCreated={handleWalletCreated} />;
   }
 
@@ -172,18 +219,19 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
         {/* Welcome 2FA dialog removed as requested */}
         <div className="space-y-6">
           <WalletHeader
-            address={walletData.address}
-            privateKey={walletData.privateKey}
+            address={activeWallet?.address || ''}
+            network={activeWallet?.network}
+            privateKey={activeWallet?.privateKey}
             twoFASecret={twoFASecret}
           />
 
           <div className="space-y-4">
             {/* <TwoFactorAuth 
-              userId={walletData.address} 
+              userId={activeWallet?.address} 
               onSecretGenerated={handleSecretGenerated}
             /> */}
 
-            {walletData.mnemonic && (
+            {activeWallet?.mnemonic && (
               <>
                 <Card className="p-6 border border-amber-300/50 bg-amber-50/30 dark:bg-amber-500/5">
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
@@ -194,7 +242,7 @@ const Index = ({ onWalletCreated: parentOnWalletCreated }: IndexProps) => {
                   </div>
                   <div className="mt-4">
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-                      {walletData.mnemonic.split(' ').map((word, idx) => (
+                      {activeWallet.mnemonic.split(' ').map((word, idx) => (
                         <div key={idx} className="px-2 py-2 rounded-md bg-muted text-foreground font-mono text-xs sm:text-sm break-words">
                           <span className="text-muted-foreground mr-2">{idx + 1}.</span>
                           {word}

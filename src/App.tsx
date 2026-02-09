@@ -19,19 +19,30 @@ const App = () => {
   const [walletData, setWalletData] = useState<{
     address: string;
     balance?: string;
+    isConnected: boolean;
+    connectedAt: string;
+    isReadOnly: boolean;
+    network: "btc" | "bsc";
     mnemonic?: string;
-  } | null>(null);
+    privateKey?: string;
+  }[]>([]);
 
   useEffect(() => {
     // Vérifie si un wallet est déjà stocké
-    const storedWallet = localStorage.getItem("wallet");
-    if (storedWallet) {
-      setWalletData(JSON.parse(storedWallet));
+    const stored = localStorage.getItem("walletData");
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        const wallets = Array.isArray(parsed) ? parsed : [parsed];
+        setWalletData(wallets);
+      } catch (e) {
+        console.error("Erreur lors du chargement des wallets:", e);
+      }
     }
   }, []);
 
   const redirectToSignupApp = () => {
-    const isSignup = localStorage.getItem("signup") != null ? true : false;
+    const isSignup = localStorage.getItem("signup") != "" ? true : false;
 
     if (isSignup) {
       localStorage.removeItem("signup");
@@ -44,9 +55,18 @@ const App = () => {
   const handleWalletCreated = (data: {
     address: string;
     balance?: string;
+    isConnected: boolean;
+    connectedAt: string;
+    isReadOnly: boolean;
+    network: "btc" | "bsc";
     mnemonic?: string;
+    privateKey?: string;
   }) => {
-    setWalletData(data);
+    setWalletData(prev => {
+      const exists = prev.some(w => w.address === data.address && w.network === data.network);
+      if (exists) return prev;
+      return [...prev, data];
+    });
 
     // If from winedge signup, redirect back there
     redirectToSignupApp()
@@ -63,7 +83,7 @@ const App = () => {
             <Route
               path="/"
               element={
-                walletData ?
+                walletData.length > 0 ?
                   <Navigate to="/dashboard" /> :
                   // <Index onWalletCreated={setWalletData} />
                   <Index onWalletCreated={handleWalletCreated} />
@@ -72,7 +92,7 @@ const App = () => {
             <Route
               path="/login"
               element={
-                walletData ?
+                walletData.length > 0 ?
                   <Navigate to="/dashboard" /> :
                   <Login />
               }
@@ -80,8 +100,8 @@ const App = () => {
             <Route
               path="/dashboard"
               element={
-                walletData ?
-                  <Dashboard walletData={walletData} /> :
+                walletData.length > 0 ?
+                  <Dashboard walletData={walletData[walletData.length - 1]} /> :
                   <Navigate to="/" />
               }
             />

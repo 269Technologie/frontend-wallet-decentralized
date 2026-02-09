@@ -14,11 +14,12 @@ import { useToast } from "@/hooks/use-toast";
 
 interface WalletHeaderProps {
   address: string;
+  network?: "btc" | "bsc";
   privateKey?: string;
   twoFASecret?: string;
 }
 
-const WalletHeader = ({ address, privateKey, twoFASecret }: WalletHeaderProps) => {
+const WalletHeader = ({ address, network = "btc", privateKey, twoFASecret }: WalletHeaderProps) => {
   const [balance, setBalance] = useState("0.00000000");
   const [usdValue, setUsdValue] = useState("$0.00");
   const { toast } = useToast();
@@ -26,11 +27,38 @@ const WalletHeader = ({ address, privateKey, twoFASecret }: WalletHeaderProps) =
   useEffect(() => {
     const fetchBalance = async () => {
       try {
-        const response = await fetch(`https://api.winedge.io/v2/balance/${address}`);
-        if (response.ok) {
-          const data = await response.json();
-          setBalance((data.balance / 100000000).toFixed(8)); // Convert from satoshis to BTC
-          setUsdValue(`$${(data.balance / 100000000 * 43720).toFixed(2)}`); // Assuming BTC price
+        if (network === "btc") {
+          // Use mempool.space for Bitcoin balance
+          const response = await fetch(`https://mempool.space/api/address/${address}`);
+          if (response.ok) {
+            const data = await response.json();
+            const stats = data.chain_stats;
+            const satBalance = stats.funded_txo_sum - stats.spent_txo_sum;
+            const btcBalance = satBalance / 100000000;
+            setBalance(btcBalance.toFixed(8));
+            setUsdValue(`$${(btcBalance * 43720).toFixed(2)}`); // Assuming BTC price
+          }
+        } else if (network === "bsc") {
+          // Use Binance Public RPC for BSC balance
+          const response = await fetch("https://bsc-dataseed.binance.org/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              jsonrpc: "2.0",
+              id: 1,
+              method: "eth_getBalance",
+              params: [address, "latest"]
+            })
+          });
+          if (response.ok) {
+            const data = await response.json();
+            if (data.result) {
+              const wei = BigInt(data.result);
+              const bnbBalance = Number(wei) / 1e18;
+              setBalance(bnbBalance.toFixed(18).slice(0, 10)); // Show manageable decimals
+              setUsdValue(`$${(bnbBalance * 300).toFixed(2)}`); // Assuming BNB price
+            }
+          }
         }
       } catch (error) {
         console.error("Erreur lors de la récupération du solde:", error);
@@ -38,7 +66,7 @@ const WalletHeader = ({ address, privateKey, twoFASecret }: WalletHeaderProps) =
     };
 
     if (address) fetchBalance();
-  }, [address]);
+  }, [address, network]);
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(address);
@@ -92,15 +120,15 @@ const WalletHeader = ({ address, privateKey, twoFASecret }: WalletHeaderProps) =
           <Settings className="h-5 w-5" />
         </Button>
       </div>
-      
+
       <div className="text-center">
         <div className="text-4xl font-bold text-primary mb-2">
-          {balance} BTC
+          {balance} {network === "btc" ? "BTC" : "BNB/WIT"}
         </div>
         <div className="text-lg text-muted-foreground mb-6">
           ≈ {usdValue} USD
         </div>
-        
+
         <div className="bg-background rounded-lg p-4 border border-border">
           <div className="text-sm text-muted-foreground mb-2">Wallet Address</div>
           <div className="flex items-center justify-between">
@@ -114,13 +142,13 @@ const WalletHeader = ({ address, privateKey, twoFASecret }: WalletHeaderProps) =
                     Copié
                   </div>
                 )}
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   size="icon"
                   onClick={handleCopy}
                   className="h-8 w-8"
                 >
-                <Copy className="h-4 w-4" />
+                  <Copy className="h-4 w-4" />
                 </Button>
               </div>
               <Dialog>

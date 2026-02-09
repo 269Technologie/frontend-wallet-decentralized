@@ -24,15 +24,15 @@ const ConnectWalletFlow = ({ onWalletConnected, onCancel }: ConnectWalletFlowPro
       if (!phrase || phrase.trim().length === 0) {
         return false;
       }
-      
+
       // Diviser la phrase en mots
       const words = phrase.trim().split(/\s+/);
-      
+
       // Vérifier qu'il y a 12 ou 24 mots
       if (words.length !== 12 && words.length !== 24) {
         return false;
       }
-      
+
       // Vérifier que chaque mot ne contient que des caractères alphabétiques minuscules
       const wordPattern = /^[a-z]+$/;
       for (const word of words) {
@@ -40,7 +40,7 @@ const ConnectWalletFlow = ({ onWalletConnected, onCancel }: ConnectWalletFlowPro
           return false;
         }
       }
-      
+
       return true;
     } catch (error) {
       return false;
@@ -126,13 +126,13 @@ const ConnectWalletFlow = ({ onWalletConnected, onCancel }: ConnectWalletFlowPro
   // Étape 2: Vérification automatique
   const handleVerification = async () => {
     setValidating(true);
-    
+
     // Simuler une vérification (ajouter un délai pour l'UX)
     await new Promise(resolve => setTimeout(resolve, 1500));
-    
+
     const valid = validateRecoveryPhrase(bitcoinAddress.trim());
     setIsValid(valid);
-    
+
     if (valid) {
       toast({
         title: "✅ Phrase de récupération valide",
@@ -142,11 +142,11 @@ const ConnectWalletFlow = ({ onWalletConnected, onCancel }: ConnectWalletFlowPro
     } else {
       toast({
         title: "❌ Adresse invalide",
-        description: "Cette phrase n'est pas compatible. Vérifiez que vous avez bien saisi une phrase de récupération standard (12 ou 24 mots).", 
+        description: "Cette phrase n'est pas compatible. Vérifiez que vous avez bien saisi une phrase de récupération standard (12 ou 24 mots).",
         variant: "destructive",
       });
     }
-    
+
     setValidating(false);
   };
 
@@ -184,7 +184,7 @@ const ConnectWalletFlow = ({ onWalletConnected, onCancel }: ConnectWalletFlowPro
                 <p className="text-red-600 text-lg font-semibold">
                   Cette phrase n'est pas compatible
                 </p>
-                
+
                 <div className="bg-red-50 border-2 border-red-200 rounded-lg p-6 text-left">
                   <h3 className="font-bold text-red-900 mb-3">Vérifiez que :</h3>
                   <ul className="space-y-2 text-red-900">
@@ -230,26 +230,46 @@ const ConnectWalletFlow = ({ onWalletConnected, onCancel }: ConnectWalletFlowPro
   // Étape 3: Sauvegarde et activation
   const handleSaveWallet = async () => {
     setValidating(true);
-    
+
     try {
-      // Créer un objet wallet pour la connexion
-      const walletData = {
-        address: bitcoinAddress.trim(),
+      // 1. Récupérer les wallets existants
+      const stored = localStorage.getItem("walletData");
+      let wallets = [];
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          wallets = Array.isArray(parsed) ? parsed : [parsed];
+        } catch (e) {
+          wallets = [];
+        }
+      }
+
+      // 2. Créer le nouvel objet wallet
+      // Note: On utilise bitcoinAddress comme mnemonic ici car le champ contient la phrase
+      const newWallet = {
+        address: "Mnemonic Import", // Idéalement à dériver avec bitcoinjs
+        mnemonic: bitcoinAddress.trim(),
         balance: "0.00000000",
         isConnected: true,
-        connectedAt: new Date().toISOString()
+        connectedAt: new Date().toISOString(),
+        network: "btc" as const,
+        isReadOnly: false
       };
 
-      // Sauvegarder dans le localStorage
-      localStorage.setItem("walletData", JSON.stringify(walletData));
-      
+      // 3. Ajouter si n'existe pas déjà (basé sur le mnemonic)
+      const exists = wallets.some(w => w.mnemonic === newWallet.mnemonic);
+      if (!exists) {
+        wallets.push(newWallet);
+        localStorage.setItem("walletData", JSON.stringify(wallets));
+      }
+
       toast({
         title: "✅ Wallet importé avec succès",
         description: "Votre wallet a été importé et est maintenant connecté à WinEdge",
       });
-      
-      // Notifier le parent
-      onWalletConnected(walletData);
+
+      // Notifier le parent avec le dernier état (le nouveau wallet)
+      onWalletConnected(newWallet);
     } catch (error) {
       console.error("Erreur lors de la sauvegarde:", error);
       toast({
